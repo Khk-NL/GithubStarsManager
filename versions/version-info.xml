@@ -632,4 +632,18 @@
     </changelog>
     <downloadUrl>https://github.com/AmintaCCCP/GithubStarsManager/releases/tag/v0.8.1</downloadUrl>
   </version>
+  <version>
+    <number>0.9.0</number>
+    <releaseDate>2026-09-20</releaseDate>
+    <changelog>
+      <item>feat: Added a trusted local plugin platform with a sandboxed plugin page host, capability router, isolated per-plugin storage, permission and lifecycle management, and a documented Plugin API v1.</item>
+      <item>feat: Added release processors, repository actions, exporters, host-mediated plugin AI and web search, and the Smart Release Recommendation example plugin, all behind explicit manifest permissions.</item>
+      <item>feat: Migrated all inline bilingual copy to an i18n key system covering ten built-in languages, with a parity check that keeps the key sets identical.</item>
+      <item>feat: Added objective Repository Health facts grouped by activity, maintenance, community and maturity, with conservative observations instead of an overall health score.</item>
+      <item>feat: Added installable release asset detection for Windows, macOS, Linux and Android, reporting architecture, package type, confidence and the reason for each candidate.</item>
+      <item>feat: Added batch repository intake extraction that normalizes pasted text, Markdown and JSON into owner/repo candidates.</item>
+      <item>fix: Hardened device platform detection so iOS and ChromeOS are no longer folded into macOS or Linux, and kept unknown repository status facts unknown instead of reporting them as false.</item>
+    </changelog>
+    <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.0</downloadUrl>
+  </version>
 </versions>
