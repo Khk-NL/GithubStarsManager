@@ -9,6 +9,7 @@ import { createClipboardSlice } from './slices/clipboardSlice';
 import { createConfigurationSlice } from './slices/configurationSlice';
 import { createDiscoverySlice } from './slices/discoverySlice';
 import { createGistSlice } from './slices/gistSlice';
+import { createLinkedApplicationSlice } from './slices/linkedApplicationSlice';
 import { createPreferenceSlice } from './slices/preferenceSlice';
 import { createRepositorySlice } from './slices/repositorySlice';
 import { createRecentlyViewedSlice } from './slices/recentlyViewedSlice';
@@ -43,6 +44,7 @@ export const useAppStore = create<AppStoreState>()(
       ...createDiscoverySlice(set, get),
       ...createRecentlyViewedSlice(set, get),
       ...createClipboardSlice(set, get),
+      ...createLinkedApplicationSlice(set, get),
     }),
     appPersistenceOptions,
   ),
