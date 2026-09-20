@@ -22,7 +22,7 @@ import { debouncedPersistStorage } from './storage';
 
 export const appPersistenceOptions: PersistOptions<AppStoreState, PersistedAppState> = {
   name: 'github-stars-manager',
-  version: 16,
+  version: 17,
   storage: debouncedPersistStorage as PersistStorage<PersistedAppState>,
 partialize: (state) => ({
   // 持久化用户信息和认证状态
@@ -34,6 +34,9 @@ partialize: (state) => ({
   // 持久化仓库数据
   repositories: state.repositories,
   lastSync: state.lastSync,
+
+  // 剪贴板识别偏好（开发守则 §11）：默认关闭，只是本地开关
+  clipboardDetectionEnabled: state.clipboardDetectionEnabled,
 
   // 持久化 Gist 数据
   gists: state.gists,
@@ -362,6 +365,11 @@ state.discoverySortOrder = 'Descending';
   // v9→v10: 初始化 backendApiSecret（旧版仅存 sessionStorage；migrate 前置为 null）
   if (state && typeof (state as Record<string, unknown>).backendApiSecret !== 'string') {
 (state as Record<string, unknown>).backendApiSecret = null;
+  }
+
+  // v16→v17: 初始化剪贴板识别开关（开发守则 §11）。安全优先：旧快照一律关闭。
+  if (state && typeof (state as Record<string, unknown>).clipboardDetectionEnabled !== 'boolean') {
+    (state as Record<string, unknown>).clipboardDetectionEnabled = false;
   }
 
   // v11→v12: 仓库问答设置只存非敏感字段；旧快照使用安全默认值。

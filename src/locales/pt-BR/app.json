@@ -1181,5 +1181,11 @@
   "repositoryEditModal": {
     "char-count": "{{count}} palavras",
     "tag-count": "{{count}} etiquetas"
+  },
+  "clipboardLinkBanner": {
+    "github-link-found": "Há um link do GitHub na área de transferência: {{v1}}",
+    "open": "Abrir",
+    "dismiss": "Dispensar"
   }
+
 }
