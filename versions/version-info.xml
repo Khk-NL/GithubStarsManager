@@ -646,4 +646,12 @@
     </changelog>
     <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.0</downloadUrl>
   </version>
+  <version>
+    <number>0.9.1</number>
+    <releaseDate>2026-09-20</releaseDate>
+    <changelog>
+      <item>阶段 0：资产识别分支 rebase 并补齐 8 语言、批量提取分支 rebase、fork main 对齐上游 a8d4b7c</item>
+    </changelog>
+    <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.1</downloadUrl>
+  </version>
 </versions>
