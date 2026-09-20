@@ -216,6 +216,7 @@ PR diff 检查：
 1. 先在 `en` 与 `zh` 写好（英文是源语言，中文是 `t()` key 的校验来源）。
 2. **一次性补齐另外 8 种**。短 UI 词条手写（"取消下载"这种），长句子可以走 `scripts/codemods/generate-translations.mjs` 机翻后再改。
 3. 跑 `npm run check:i18n -- --base <PR 基线>`，必须干净。
+   **注意：`check-i18n.cjs` 读的是 git 里 HEAD 的内容，不是工作区**（`showFile(root, head, ...)`）。所以未提交时跑门禁会给出虚假的通过——必须**先提交再跑**，或者至少在同一批里把改动提交后重跑一次。同样地，zh-TW 里与简体同形的字（`小` `中` `大` 这类）会被判成"照抄简体"，要用台湾的用词区分开（`小號` `中號` `大號`）。
 4. 用行锚点插入改 locale 文件，**不要 `JSON.parse` 之后 `JSON.stringify` 整文件回写**：locale 文件是 CRLF，整体重写会产生上千行 diff，而且容易改坏编码。
 5. 如果动了 AI prompt 相关的文案，`src/services/aiPromptFixtures.test.ts` 可能要重新生成：`UPDATE_I18N_FIXTURES=1 npx vitest run src/services/aiPromptFixtures.test.ts`，然后**确认 diff 只有你这次加的那块**。
 
