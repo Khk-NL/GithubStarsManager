@@ -40,6 +40,7 @@ import type {
   SyncMode,
   TranslationEngine,
   RepositoryChatSettings,
+  ThemeTokens,
 } from '../types';
 import type { ThemePresetId } from '../constants/themePresets';
 import type { GitHubListsApiService } from '../services/githubListsApi';
@@ -270,6 +271,9 @@ export interface AppActions {
   setDiscoveryHideSeen: (enabled: boolean) => void;
   // Clipboard GitHub link detection（开发守则 §11）
   setClipboardDetectionEnabled: (enabled: boolean) => void;
+  // Theme tokens（开发守则 §14）
+  /** 局部更新：内部与当前值合并，调用方不必自己展开（避免拿到过期的渲染值）。 */
+  updateThemeTokens: (patch: Partial<ThemeTokens>) => void;
 }
 
 export type AppStoreState = AppState & AppActions;

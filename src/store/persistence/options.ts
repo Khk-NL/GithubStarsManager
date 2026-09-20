@@ -17,12 +17,13 @@ import {
   PersistedAppState,
 } from '../schema';
 import { normalizePersistedState } from '../normalizers/persistedState';
+import { DEFAULT_THEME_TOKENS, normalizeThemeTokens } from '../../utils/themeTokens';
 import { writeAuthMirror } from './authStorage';
 import { debouncedPersistStorage } from './storage';
 
 export const appPersistenceOptions: PersistOptions<AppStoreState, PersistedAppState> = {
   name: 'github-stars-manager',
-  version: 18,
+  version: 19,
   storage: debouncedPersistStorage as PersistStorage<PersistedAppState>,
 partialize: (state) => ({
   // 持久化用户信息和认证状态
@@ -41,6 +42,8 @@ partialize: (state) => ({
   discoveryHideSeen: state.discoveryHideSeen,
   // 剪贴板识别偏好（开发守则 §11）：默认关闭，只是本地开关
   clipboardDetectionEnabled: state.clipboardDetectionEnabled,
+  // Theme token（开发守则 §14）：声明式外观偏好
+  themeTokens: state.themeTokens,
 
   // 持久化 Gist 数据
   gists: state.gists,
@@ -383,6 +386,17 @@ state.discoverySortOrder = 'Descending';
   // v17→v18: 初始化剪贴板识别开关（开发守则 §11）。安全优先：旧快照一律关闭。
   if (state && typeof (state as Record<string, unknown>).clipboardDetectionEnabled !== 'boolean') {
     (state as Record<string, unknown>).clipboardDetectionEnabled = false;
+  }
+
+  // v18→v19: 初始化 Theme token（开发守则 §14）。旧快照一律"跟随预设"；
+  // 用 normalize 收敛，脏值不会写进根节点的 CSS 变量。
+  if (state && typeof (state as Record<string, unknown>).themeTokens === 'object') {
+    (state as Record<string, unknown>).themeTokens = normalizeThemeTokens(
+      (state as Record<string, unknown>).themeTokens,
+    );
+  }
+  if (state && !(state as Record<string, unknown>).themeTokens) {
+    (state as Record<string, unknown>).themeTokens = { ...DEFAULT_THEME_TOKENS };
   }
 
   // v11→v12: 仓库问答设置只存非敏感字段；旧快照使用安全默认值。

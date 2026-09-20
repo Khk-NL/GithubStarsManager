@@ -3,6 +3,7 @@ import type { AppState, TrendingTimeRange } from '../types';
 import { defaultHeaderMenuConfig, defaultReleaseSourceSettings, defaultSubscriptionChannels } from '../types';
 import { defaultRepositoryChatSettings } from '../types/repositoryChat';
 import { DEFAULT_THEME_PRESET_ID } from '../constants/themePresets';
+import { DEFAULT_THEME_TOKENS } from '../utils/themeTokens';
 import { DEFAULT_XTWEET_FOLLOWS } from '../utils/xTweetFollows';
 import { DEFAULT_TELEGRAM_FOLLOWS } from '../utils/telegramFollows';
 import { readSessionBackendSecret } from './persistence/authStorage';
@@ -30,6 +31,8 @@ export const createInitialState = (): AppState => ({
       discoveryHideSeen: false,
       // 剪贴板识别默认关闭（开发守则 §11）
       clipboardDetectionEnabled: false,
+      // Theme token 默认全部"跟随预设"（开发守则 §14）
+      themeTokens: { ...DEFAULT_THEME_TOKENS },
       gists: [],
       starredGists: [],
       gistSearchFilters: initialGistSearchFilters,

@@ -1149,3 +1149,17 @@ html.dark .release-card.is-expanded {
     animation-iteration-count: infinite !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Theme token：动效强度（开发守则 §14）
+ * 用户在设置里选"减弱动效"时，<html data-animation="reduced"> 生效。只压缩动画与过渡
+ * 时长，不改布局，也不影响主题预设的颜色变量。
+ * ------------------------------------------------------------------------- */
+html[data-animation='reduced'] *,
+html[data-animation='reduced'] *::before,
+html[data-animation='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

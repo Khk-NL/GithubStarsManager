@@ -5,6 +5,8 @@ import type { RepositoryChatSettings } from './repositoryChat';
 export type { RepositoryChatSettings } from './repositoryChat';
 import type { RecentlyViewedEntry } from './recentlyViewed';
 export type { RecentlyViewedEntry } from './recentlyViewed';
+import type { ThemeTokens } from './themeTokens';
+export type { ThemeTokens } from './themeTokens';
 export type {
   RepositoryHealthEnrichment,
   RepositoryHealthFact,
@@ -487,6 +489,8 @@ export interface AppState {
   // Clipboard GitHub link detection（开发守则 §11）
   /** 默认关闭；开启后只在前台 focus 时读一次剪贴板，不做后台监控。 */
   clipboardDetectionEnabled: boolean;
+  // Theme tokens（开发守则 §14）：声明式外观偏好，落到 <html> 的 CSS 变量上
+  themeTokens: ThemeTokens;
 
   // Gists
   gists: Gist[];
