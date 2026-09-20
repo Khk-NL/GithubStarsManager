@@ -30,11 +30,12 @@ vi.mock('../services/githubApi', () => ({
   GitHubApiService: vi.fn(),
 }));
 
-let mockStoreState: { language: 'zh' | 'en'; githubToken: string | null; routeMode: RouteMode; setReadmeModalOpen: () => void } = {
+let mockStoreState: { language: 'zh' | 'en'; githubToken: string | null; routeMode: RouteMode; setReadmeModalOpen: () => void; recordRepositoryView: () => void } = {
   language: 'zh',
   githubToken: null,
   routeMode: 'auto',
   setReadmeModalOpen: vi.fn(),
+  recordRepositoryView: vi.fn(),
 };
 
 vi.mock('../store/useAppStore', () => ({
@@ -53,6 +54,7 @@ const setMockStore = (githubToken: string | null = null) => {
     githubToken,
     routeMode: 'auto' as RouteMode,
     setReadmeModalOpen: vi.fn(),
+    recordRepositoryView: vi.fn(),
   };
   (useAppStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector?: (state: unknown) => unknown) => selector ? selector(mockStoreState) : mockStoreState);
 };

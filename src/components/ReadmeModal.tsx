@@ -50,9 +50,10 @@ export const ReadmeModal: React.FC<ReadmeModalProps> = ({
   onCloseAutoFocus,
   repository
 }) => {
-  const { language, setReadmeModalOpen } = useAppStore(useShallow((state) => ({
+  const { language, setReadmeModalOpen, recordRepositoryView } = useAppStore(useShallow((state) => ({
     language: state.language,
     setReadmeModalOpen: state.setReadmeModalOpen,
+    recordRepositoryView: state.recordRepositoryView,
   })));
   const [readmeContent, setReadmeContent] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -441,6 +442,12 @@ export const ReadmeModal: React.FC<ReadmeModalProps> = ({
     setReadmeModalOpen(isOpen);
     return () => setReadmeModalOpen(false);
   }, [isOpen, setReadmeModalOpen]);
+
+  // 打开 README 就是一次「浏览」（开发守则 §9）。记录开关与去重/上限都在 store 与
+  // utils 里，这里只负责触发；重复触发只会刷新时间戳，不会产生重复条目。
+  useEffect(() => {
+    if (isOpen && repository) recordRepositoryView(repository);
+  }, [isOpen, repository, recordRepositoryView]);
 
   useEffect(() => {
     if (!isOpen) {
