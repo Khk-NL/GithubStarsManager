@@ -1117,7 +1117,15 @@
     "font-scale": "Tamanho da fonte",
     "reduce-motion": "Reduzir animações",
     "reduce-motion-hint": "Encurta animações e transições para quase zero. O layout e as cores não mudam.",
-    "reset-appearance": "Restaurar aparência"
+    "reset-appearance": "Restaurar aparência",
+    "card-fields": "Campos do cartão",
+    "card-fields-hint": "Muda apenas o que cada cartão da lista mostra; seus dados não são alterados.",
+    "card-field-description": "Descrição",
+    "card-field-tags": "Etiquetas",
+    "card-field-language": "Linguagem",
+    "card-field-stars": "Stars",
+    "card-field-license": "Licença",
+    "card-field-lastUpdated": "Último push"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "Pesquisa semântica vetorial",

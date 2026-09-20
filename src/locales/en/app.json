@@ -1117,7 +1117,15 @@
     "font-scale": "Font size",
     "reduce-motion": "Reduce motion",
     "reduce-motion-hint": "Shortens animations and transitions to near zero. Layout and colours are unchanged.",
-    "reset-appearance": "Reset appearance"
+    "reset-appearance": "Reset appearance",
+    "card-fields": "Repository card fields",
+    "card-fields-hint": "Only changes what each card in the list shows; your data is untouched.",
+    "card-field-description": "Description",
+    "card-field-tags": "Tags",
+    "card-field-language": "Language",
+    "card-field-stars": "Stars",
+    "card-field-license": "License",
+    "card-field-lastUpdated": "Last pushed"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "Vector Semantic Search",

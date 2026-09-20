@@ -1117,7 +1117,15 @@
     "font-scale": "字級",
     "reduce-motion": "減弱動效",
     "reduce-motion-hint": "將動畫與轉場壓縮到接近零，版面與配色不變。",
-    "reset-appearance": "恢復預設外觀"
+    "reset-appearance": "恢復預設外觀",
+    "card-fields": "倉庫卡片顯示欄位",
+    "card-fields-hint": "只影響倉庫清單中每張卡片顯示什麼，不會改動資料本身。",
+    "card-field-description": "描述",
+    "card-field-tags": "標籤",
+    "card-field-language": "主要語言",
+    "card-field-stars": "Star 數",
+    "card-field-license": "授權條款",
+    "card-field-lastUpdated": "最近推送時間"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "向量語義搜尋",

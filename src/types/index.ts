@@ -1,6 +1,8 @@
 import type { ThemePresetId } from '../constants/themePresets';
 import type { AppLanguage } from '../i18n/languages';
 
+import type { RepositoryCardFields } from './repositoryCardFields';
+export type { RepositoryCardFieldId, RepositoryCardFields } from './repositoryCardFields';
 import type { RepositoryChatSettings } from './repositoryChat';
 import type { LinkedApplication } from './linkedApplication';
 export type { RepositoryChatSettings } from './repositoryChat';
@@ -491,6 +493,8 @@ export interface AppState {
   lastSync: string | null;
   analyzingRepositoryIds: Set<number>;
   repositoryViewMode: 'grid' | 'list';
+  /** 仓库卡片显示哪些字段（开发守则 §14）：只保存声明式开关 */
+  repositoryCardFields: RepositoryCardFields;
 
   // Recently viewed (开发守则 §9)：纯本地，不上传远端、不进插件快照
   recentlyViewed: RecentlyViewedEntry[];

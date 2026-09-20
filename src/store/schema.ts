@@ -87,6 +87,7 @@ export type PersistedAppState = Partial<
     | 'assetFilters'
     | 'linkedApplications'
     | 'trendingSnapshots'
+    | 'repositoryCardFields'
     | 'theme'
     | 'themePreset'
     | 'currentView'

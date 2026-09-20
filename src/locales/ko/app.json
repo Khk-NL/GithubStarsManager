@@ -1117,7 +1117,15 @@
     "font-scale": "글자 크기",
     "reduce-motion": "모션 줄이기",
     "reduce-motion-hint": "애니메이션과 전환을 거의 0으로 줄입니다. 레이아웃과 색상은 그대로입니다.",
-    "reset-appearance": "모양 초기화"
+    "reset-appearance": "모양 초기화",
+    "card-fields": "저장소 카드에 표시할 항목",
+    "card-fields-hint": "목록의 카드에 무엇을 표시할지만 바꿉니다. 데이터는 그대로입니다.",
+    "card-field-description": "설명",
+    "card-field-tags": "태그",
+    "card-field-language": "언어",
+    "card-field-stars": "스타 수",
+    "card-field-license": "라이선스",
+    "card-field-lastUpdated": "최근 푸시"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "벡터 의미 검색",

@@ -90,6 +90,8 @@ const storeState = {
   activeAIConfig: null,
   setAnalyzingRepository: vi.fn(),
   language: 'zh' as const,
+  // 卡片可见字段（开发守则 §14）：默认全开，单个用例里按需改
+  repositoryCardFields: { description: true, tags: true, language: true, stars: true, license: true, lastUpdated: true },
   updateRepository: vi.fn(),
   deleteRepository: vi.fn(),
   vectorSearchConfig: {
@@ -509,5 +511,32 @@ describe('RepositoryCard rapid touch drags (CodeRabbit round 2)', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('honours the per-field visibility switches', () => {
+    storeState.repositoryCardFields = {
+      description: false,
+      tags: false,
+      language: false,
+      stars: true,
+      license: false,
+      lastUpdated: false,
+    };
+    renderRepositoryCard('grid');
+
+    // 关闭的字段不渲染：仓库没有语言/许可证可断言文案，这里断言描述与标签消失
+    expect(screen.queryByText('A repository description')).not.toBeInTheDocument();
+    expect(screen.queryByText('TypeScript')).not.toBeInTheDocument();
+    // 仍然开着的字段照常显示
+    expect(screen.getByText('128')).toBeInTheDocument();
+
+    storeState.repositoryCardFields = {
+      description: true,
+      tags: true,
+      language: true,
+      stars: true,
+      license: true,
+      lastUpdated: true,
+    };
   });
 });

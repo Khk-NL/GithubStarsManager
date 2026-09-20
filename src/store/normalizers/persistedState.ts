@@ -12,6 +12,7 @@ import { isAppLanguage } from '../../i18n/languages';
 import { normalizeReleaseSourceSettings } from '../../utils/releaseSources';
 import { normalizeLinkedApplications } from '../../utils/linkedApplications';
 import { normalizeTrendingSnapshots } from '../../utils/trendingSnapshots';
+import { normalizeRepositoryCardFields } from '../../utils/repositoryCardFields';
 import { normalizeXTweetAuth, normalizeXTweetFollows } from '../../utils/xTweetFollows';
 import { normalizeTelegramFollows } from '../../utils/telegramFollows';
 import type { AppStoreState } from '../types';
@@ -180,6 +181,8 @@ export const normalizePersistedState = (
     linkedApplications: normalizeLinkedApplications((safePersisted as Record<string, unknown>).linkedApplications),
     // Trending 快照（开发守则 §7）：逐份校验并裁剪，坏快照不进内存
     trendingSnapshots: normalizeTrendingSnapshots((safePersisted as Record<string, unknown>).trendingSnapshots),
+    // 卡片可见字段（开发守则 §14）：逐项校验，非法值按默认（显示）处理
+    repositoryCardFields: normalizeRepositoryCardFields((safePersisted as Record<string, unknown>).repositoryCardFields),
     language: isAppLanguage(safePersisted.language) ? safePersisted.language : currentState.language,
     translationEngine: safePersisted.translationEngine === 'google' || safePersisted.translationEngine === 'ai'
       ? safePersisted.translationEngine

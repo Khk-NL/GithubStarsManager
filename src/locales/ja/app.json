@@ -1117,7 +1117,15 @@
     "font-scale": "文字サイズ",
     "reduce-motion": "モーションを抑える",
     "reduce-motion-hint": "アニメーションとトランジションをほぼゼロにします。レイアウトと配色は変わりません。",
-    "reset-appearance": "外観をリセット"
+    "reset-appearance": "外観をリセット",
+    "card-fields": "リポジトリカードの表示項目",
+    "card-fields-hint": "一覧のカードに何を表示するかだけを変えます。データ自体は変わりません。",
+    "card-field-description": "説明",
+    "card-field-tags": "タグ",
+    "card-field-language": "言語",
+    "card-field-stars": "スター数",
+    "card-field-license": "ライセンス",
+    "card-field-lastUpdated": "最終プッシュ"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "ベクトル意味検索",

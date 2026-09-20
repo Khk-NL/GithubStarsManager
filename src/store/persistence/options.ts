@@ -20,12 +20,13 @@ import { normalizePersistedState } from '../normalizers/persistedState';
 import { DEFAULT_THEME_TOKENS, normalizeThemeTokens } from '../../utils/themeTokens';
 import { normalizeLinkedApplications } from '../../utils/linkedApplications';
 import { normalizeTrendingSnapshots } from '../../utils/trendingSnapshots';
+import { normalizeRepositoryCardFields } from '../../utils/repositoryCardFields';
 import { writeAuthMirror } from './authStorage';
 import { debouncedPersistStorage } from './storage';
 
 export const appPersistenceOptions: PersistOptions<AppStoreState, PersistedAppState> = {
   name: 'github-stars-manager',
-  version: 21,
+  version: 22,
   storage: debouncedPersistStorage as PersistStorage<PersistedAppState>,
 partialize: (state) => ({
   // 持久化用户信息和认证状态
@@ -99,6 +100,8 @@ sortOrder: state.gistSearchFilters.sortOrder,
 
   // 持久化资源过滤器
   assetFilters: state.assetFilters,
+  // 卡片可见字段（开发守则 §14）
+  repositoryCardFields: state.repositoryCardFields,
 
   // Trending 快照（开发守则 §7）：本地榜单历史，不参与任何远端同步
   trendingSnapshots: state.trendingSnapshots,
@@ -411,6 +414,13 @@ state.discoverySortOrder = 'Descending';
   }
   if (state && !(state as Record<string, unknown>).themeTokens) {
     (state as Record<string, unknown>).themeTokens = { ...DEFAULT_THEME_TOKENS };
+  }
+
+  // v21→v22: 初始化仓库卡片字段开关（开发守则 §14）。旧快照一律全开，行为不变；
+  // 幂等：normalizeRepositoryCardFields 只认布尔值，其余回落默认。
+  if (state) {
+    const stateRecord = state as Record<string, unknown>;
+    stateRecord.repositoryCardFields = normalizeRepositoryCardFields(stateRecord.repositoryCardFields);
   }
 
   // v11→v12: 仓库问答设置只存非敏感字段；旧快照使用安全默认值。

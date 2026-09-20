@@ -1117,7 +1117,15 @@
     "font-scale": "Размер шрифта",
     "reduce-motion": "Уменьшить анимацию",
     "reduce-motion-hint": "Сокращает анимацию и переходы почти до нуля. Разметка и цвета не меняются.",
-    "reset-appearance": "Сбросить оформление"
+    "reset-appearance": "Сбросить оформление",
+    "card-fields": "Поля карточки репозитория",
+    "card-fields-hint": "Меняет только то, что показывают карточки в списке; сами данные не затрагиваются.",
+    "card-field-description": "Описание",
+    "card-field-tags": "Теги",
+    "card-field-language": "Язык",
+    "card-field-stars": "Звёзды",
+    "card-field-license": "Лицензия",
+    "card-field-lastUpdated": "Последний push"
   },
   "vectorSearchSettings": {
     "vector-semantic-search": "Векторный семантический поиск",
