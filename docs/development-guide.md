@@ -278,10 +278,14 @@ git checkout -b pr/<slug> refs/remotes/aminta/main
 - `package.json` / `server/package.json` 的 `version` 字段
 - `package-lock.json` / `server/package-lock.json` 的版本字段
 - `versions/version-info.xml`
-- `docs/`（日志与报告留在 fork main）
+- **fork 内部**文档：`docs/logs/`、`docs/plans/`、`docs/reports/`、`docs/audit/`（阶段日志与审计留在 fork main）
 - codemod 类一次性脚本（放工作区外，用完删）
 
-前三条由 `check-pr-release-files.cjs` 强制；后两条是约定。提交前自查：
+`docs/adr/` 与 `docs/proposals/` 属于**上游面向**的文档，可以进 PR 分支（社区插件注册表提案就走
+`docs/proposals/`）。区分标准很简单：这份文档是给上游维护者看的，还是只服务于我们自己这条 fork
+的开发流程。
+
+前三条由 `check-pr-release-files.cjs` 强制；其余是约定。提交前自查：
 
 ```
 node scripts/check-pr-release-files.cjs --base refs/remotes/aminta/main
