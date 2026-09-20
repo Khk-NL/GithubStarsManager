@@ -1709,11 +1709,15 @@ ${previousOutput}
     };
 
     const snapshot = deriveRepositoryHealthSnapshot(repository);
+    // 三态渲染：`undefined` 是「本地没有这个事实」，必须输出 unknown，
+    // 用 truthiness 会把它说成「否」，等于向模型伪造了一条事实。
+    const tri = (value: boolean | undefined): string =>
+      value === undefined ? unknown : value ? yes : no;
     const status = [
-      `${zh ? '已归档' : 'archived'}=${snapshot.archived ? yes : no}`,
-      `${zh ? '已停用' : 'disabled'}=${snapshot.disabled === true ? yes : no}`,
-      `${zh ? 'Fork' : 'fork'}=${snapshot.fork ? yes : no}`,
-      `${zh ? '模板' : 'template'}=${snapshot.isTemplate ? yes : no}`,
+      `${zh ? '已归档' : 'archived'}=${tri(snapshot.archived)}`,
+      `${zh ? '已停用' : 'disabled'}=${tri(snapshot.disabled)}`,
+      `${zh ? 'Fork' : 'fork'}=${tri(snapshot.fork)}`,
+      `${zh ? '模板' : 'template'}=${tri(snapshot.isTemplate)}`,
     ].join(', ');
     const observations = snapshot.signals.length
       ? snapshot.signals.map((signal) => signal.id).join(', ')

@@ -140,13 +140,15 @@ export function deriveRepositoryHealthSnapshot(
       : Math.max(0, Math.floor((now - pushedTimestamp) / MS_PER_DAY));
 
   // 发布频率：以仓库年龄为窗口，分母下限一个月，避免新仓库出现噪声极值。
-  // 仓库年龄未知且调用方没给 Release 数据时保持 null（未知），不能报成 0 次/年
-  // ——那会把「不知道」说成「从不发布」。
+  // 仓库年龄未知时无法换算「频率」：
+  // - 调用方没给 Release 数据 → null（不知道）
+  // - 给了数据但没有 Release → 0（确实从不发布）
+  // - 给了数据且有 Release → 也只能是 null：把「总数」当成「次/年」是错的
   const releasesPerYear =
     ageDays === null
-      ? releases === undefined
-        ? null
-        : round1(releaseCount)
+      ? releases !== undefined && releaseCount === 0
+        ? 0
+        : null
       : round1(
           releaseCount /
             (Math.max(ageDays, MIN_FREQUENCY_WINDOW_DAYS) / DAYS_PER_YEAR),
@@ -158,10 +160,12 @@ export function deriveRepositoryHealthSnapshot(
       : toCount(repository.forks);
 
   const snapshot: RepositoryHealthSnapshot = {
-    archived: repository.archived === true,
+    // 直接透传三态：字段缺失时保留 undefined（未知），不要用 `=== true` 收敛成 false
+    // ——那会把旧数据/后端未存储的仓库误报成「未归档 / 非 Fork / 非模板」。
+    archived: repository.archived,
     disabled: repository.disabled,
-    fork: repository.fork === true,
-    isTemplate: repository.is_template === true,
+    fork: repository.fork,
+    isTemplate: repository.is_template,
 
     createdAt: repository.created_at ?? '',
     pushedAt: repository.pushed_at || null,
@@ -367,11 +371,16 @@ export function groupRepositoryHealthFacts(
 }
 
 /**
- * 判断仓库是否已归档。
- * 供列表筛选复用：`archived` 缺失（旧持久化数据 / 非 starred 来源）按未归档处理。
+ * 判断仓库是否已归档，三态返回。
+ *
+ * 字段缺失时返回 `undefined`（未知），调用方必须用严格相等比较，
+ * 这样 `healthArchived: true` 与 `healthArchived: false` 都不会命中未知的仓库——
+ * 否则「筛出未归档」会把本地根本没有该字段的仓库一并当成未归档列出。
  */
-export function isArchivedRepository(repository: Pick<Repository, 'archived'>): boolean {
-  return repository.archived === true;
+export function isArchivedRepository(
+  repository: Pick<Repository, 'archived'>,
+): boolean | undefined {
+  return typeof repository.archived === 'boolean' ? repository.archived : undefined;
 }
 
 /**

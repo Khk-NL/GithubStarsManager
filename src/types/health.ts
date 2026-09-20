@@ -101,10 +101,16 @@ export interface RepositoryHealthEnrichment {
  * 因此不会影响后端同步指纹（Issue #304 的哈希契约）。
  */
 export interface RepositoryHealthSnapshot {
-  archived: boolean;
-  disabled?: boolean;
-  fork: boolean;
-  isTemplate: boolean;
+  /**
+   * GitHub 原生状态字段：三态。
+   * `true` / `false` 是已知事实，`undefined` 表示本地根本没有这个字段
+   * （例如后端 schema 不存储该列、或旧持久化数据缺失）——**不等于「未归档」**。
+   * 面板对 `undefined` 显示「未知」，筛选也对 unknown 既不匹配 true 也不匹配 false。
+   */
+  archived: boolean | undefined;
+  disabled: boolean | undefined;
+  fork: boolean | undefined;
+  isTemplate: boolean | undefined;
 
   createdAt: string;
   pushedAt: string | null;

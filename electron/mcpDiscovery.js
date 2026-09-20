@@ -284,6 +284,9 @@ function buildRepoEvidence(repo, latestRelease, releases) {
         // 只有本地确实没有该事实时才声明这项限制；有了就不要再谎称拿不到。
         ...(hasArchivedFlag ? [] : ['archived is not stored locally']),
         'health facts cover the stored repository record and locally cached releases only',
+        // 明确声明每仓 500 条的上限：否则 release_count / releases_per_year 会被低估，
+        // 而调用方无从知道这些数字是按截断后的集合算出来的。
+        'health facts use at most 500 locally cached releases per repository',
         'contributors, closed issues, security policy, CI and README presence require extra GitHub requests and are not stored locally',
         'release evidence is limited to locally cached releases',
       ],

@@ -138,10 +138,12 @@ export function deriveRepositoryHealthFacts(
     createdTimestamp === null ? null : Math.max(0, Math.floor((now - createdTimestamp) / MS_PER_DAY));
   const daysSinceLastPush =
     pushedTimestamp === null ? null : Math.max(0, Math.floor((now - pushedTimestamp) / MS_PER_DAY));
+  // 仓库年龄未知时无法换算「频率」：只有「确实没有任何 Release」才是 0，其余保持 null，
+  // 否则会把「Release 总数」当成「次/年」报出去（与 Electron / TS 版必须一致）。
   const releasesPerYear =
     ageDays === null
-      ? provided
-        ? round1(own.length)
+      ? provided && own.length === 0
+        ? 0
         : null
       : round1(own.length / (Math.max(ageDays, MIN_FREQUENCY_WINDOW_DAYS) / DAYS_PER_YEAR));
 
@@ -188,8 +190,14 @@ export function deriveRepositoryHealthSignals(facts: RepositoryHealthFacts): str
   return signals;
 }
 
-export function isArchivedRepository(repo: Pick<HealthRepositoryInput, 'archived'>): boolean {
-  return repo?.archived === true;
+/**
+ * 判断仓库是否已归档，三态返回（与 Electron / TS 版一致）。
+ * 字段缺失时返回 undefined，调用方的严格相等比较因此不会把「未知」算成未归档。
+ */
+export function isArchivedRepository(
+  repo: Pick<HealthRepositoryInput, 'archived'>,
+): boolean | undefined {
+  return typeof repo?.archived === 'boolean' ? repo.archived : undefined;
 }
 
 /** 与 TS 版一致：时间不可解析时返回 false（筛选语义下「未知」不算「近期活跃」）。 */

@@ -2,7 +2,7 @@
 
 - 日期：2026-09-20
 - 分支：`main`
-- 依据：[`开发守则.md`](../../../开发守则.md) §6 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §6
+- 依据：《开发守则》§6 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §6
 - 提交：`feat: add batch repository URL extraction`
 - 代码量：4 个文件、+约 900 行（含 70 个用例）→ minor 提升至 `0.11.0`
 

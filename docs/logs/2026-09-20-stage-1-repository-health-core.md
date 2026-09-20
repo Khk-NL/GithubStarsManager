@@ -2,7 +2,7 @@
 
 - 日期：2026-09-20
 - 分支：`plugin-system-v0-9`（基线 `b06a347`，已快进到 `upstream/plugin-system-v0-9`）
-- 依据：[`开发守则.md`](../../../开发守则.md) §1 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §4
+- 依据：《开发守则》§1 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §4
 - 阶段提交：`feat: add repository health facts`
 - 代码量：29 个文件，+2112 / −31 → 按仓库既有节奏（1166–7110 行的功能提交对应 minor 提升）取 minor 版本号 `0.9.0`
 

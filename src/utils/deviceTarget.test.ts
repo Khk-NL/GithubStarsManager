@@ -53,6 +53,43 @@ describe('detectDevicePlatformSync', () => {
     stubNavigator({ platform: 'SunOS', userAgent: 'Mozilla/5.0 (Unknown)' });
     expect(detectDevicePlatformSync()).toBeNull();
   });
+
+  it('does not map iOS onto macOS', () => {
+    // iOS 上没有 dmg/pkg，映射成 macOS 会推荐错误的安装包
+    stubNavigator({
+      userAgentData: { platform: 'iOS' },
+      platform: 'iPhone',
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)',
+    });
+    expect(detectDevicePlatformSync()).toBeNull();
+
+    stubNavigator({ platform: 'iPad', userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X)' });
+    expect(detectDevicePlatformSync()).toBeNull();
+  });
+
+  it('does not map ChromeOS onto Linux', () => {
+    // ChromeOS 的 navigator.platform 是 "Linux x86_64"，只靠它会误判成 Linux
+    stubNavigator({
+      userAgentData: { platform: 'Chrome OS' },
+      platform: 'Linux x86_64',
+      userAgent: 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36',
+    });
+    expect(detectDevicePlatformSync()).toBeNull();
+
+    // 即使 userAgentData 不可用，UA 里的 CrOS 也要拦住
+    stubNavigator({
+      userAgentData: undefined,
+      platform: 'Linux x86_64',
+      userAgent: 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36',
+    });
+    expect(detectDevicePlatformSync()).toBeNull();
+  });
+
+  it('treats Darwin as macOS rather than Windows', () => {
+    // `darwin` 里含有 `win`：判定顺序若把 Windows 放在前面，Safari 会被当成 Windows
+    stubNavigator({ userAgentData: undefined, platform: 'Darwin', userAgent: 'Mozilla/5.0 (Darwin)' });
+    expect(detectDevicePlatformSync()).toBe('macos');
+  });
 });
 
 describe('resolveDeviceArchitecture', () => {

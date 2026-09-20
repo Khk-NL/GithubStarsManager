@@ -2,7 +2,7 @@
 
 - 日期：2026-09-20
 - 分支：`plugin-system-v0-9`（基线 `8b1bfeb`）
-- 依据：[`开发守则.md`](../../../开发守则.md) §2 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §5
+- 依据：《开发守则》§2 与 [`docs/plans/2026-09-17-product-roadmap.md`](../plans/2026-09-17-product-roadmap.md) §5
 - 提交：`feat: detect installable release assets`
 - 代码量：+约 1200 行（含测试）→ minor 提升至 `0.10.0`
 

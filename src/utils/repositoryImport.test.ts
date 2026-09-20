@@ -127,6 +127,15 @@ describe('extractRepositoryCandidates — GitHub URL 形态', () => {
     expect(names('Yes: https://github.com/foo/bar, and more')).toEqual(['foo/bar']);
   });
 
+  it('does not treat a lookalike host as GitHub', () => {
+    // `notgithub.com` 内部含有 `github.com`，若不做主机边界检查会被当成高可信度候选
+    expect(extractRepositoryCandidates('see https://notgithub.com/acme/tool').candidates).toEqual([]);
+    expect(extractRepositoryCandidates('see https://mygithub.com/acme/tool').candidates).toEqual([]);
+    expect(extractRepositoryCandidates('see https://github.com.evil.example/acme/tool').candidates).toEqual([]);
+    // 正常主机仍然能识别，包括 www 与省略 scheme 的写法
+    expect(names('https://www.github.com/acme/tool')).toEqual(['acme/tool']);
+  });
+
   it('keeps the raw fragment in originalValue for traceability', () => {
     const [candidate] = extractRepositoryCandidates('see https://github.com/foo/bar.').candidates;
     expect(candidate.originalValue).toBe('https://github.com/foo/bar.');

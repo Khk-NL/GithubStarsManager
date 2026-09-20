@@ -90,6 +90,9 @@ export function buildRepoEvidence(
         // 只有确实拿不到该事实时才声明限制；本地已有就不再谎称不可用。
         ...(hasArchivedFlag ? [] : ['archived is not stored locally']),
         'health facts cover the stored repository record and locally cached releases only',
+        // 与 Electron 侧保持同一句：每仓最多使用 500 条本地缓存的 Release，
+        // release_count / releases_per_year 均按该上限内的集合计算。
+        'health facts use at most 500 locally cached releases per repository',
         'contributors, closed issues, security policy, CI and README presence require extra GitHub requests and are not stored locally',
         'release evidence is limited to locally cached releases',
       ],

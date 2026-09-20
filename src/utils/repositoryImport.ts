@@ -96,8 +96,15 @@ const BARE_SLUG_STOPWORDS = new Set([
   'day', 'week', 'month', 'year', 'cost', 'benefit', 'pros', 'cons', 'win', 'loss',
 ]);
 
-/** 匹配 `github.com/…`，scheme 与 `www.` 均可省略。 */
-const GITHUB_URL_PATTERN = /(?:https?:\/\/)?(?:www\.)?github\.com\/([^\s<>()[\]{}"'`]*)/gi;
+/**
+ * 匹配 `github.com/…`，scheme 与 `www.` 均可省略。
+ *
+ * 前面的否定环视是必需的：否则 `https://notgithub.com/acme/tool` 会在 `notgithub.com`
+ * 内部匹配到 `github.com/acme/tool`，把第三方域名当成 GitHub 仓库，还标成高可信度。
+ * 域名标签字符（字母数字、`.`、`-`）紧邻 `github.com` 之前时即判定不是 GitHub 主机。
+ */
+const GITHUB_URL_PATTERN =
+  /(?<![A-Za-z0-9.-])(?:https?:\/\/)?(?:www\.)?github\.com\/([^\s<>()[\]{}"'`]*)/gi;
 
 /**
  * 匹配正文里的裸 `owner/repo`。

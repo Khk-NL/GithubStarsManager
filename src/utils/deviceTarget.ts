@@ -33,21 +33,56 @@ function readUserAgentData(): UADataLike | null {
   return data ?? null;
 }
 
-/** 把 `userAgentData.platform` / `navigator.platform` / UA 字符串归一化为目标平台。 */
+/**
+ * 把 `userAgentData.platform` / `navigator.platform` / UA 字符串归一化为目标平台。
+ *
+ * 判定顺序是刻意的：
+ * 1. 先排除不支持的平台。iOS 与 ChromeOS 本仓库都不发布对应安装包，
+ *    把它们当成 macOS / Linux 会让推荐组件向 iOS 用户推荐 `.dmg`、
+ *    向 ChromeOS 用户推荐 `.deb` / `.rpm` / AppImage。这里返回 null，
+ *    调用方按「平台未知」处理（并列候选且不声称适配）。
+ * 2. macOS 必须排在 Windows 之前：`darwin` 里含有 `win`，顺序反了会把
+ *    Safari 的 UA（`… Darwin …`）判成 Windows。
+ */
 function normalizePlatformToken(value: string | undefined | null): InstallablePlatform | null {
   if (!value) return null;
   const token = value.toLowerCase();
+
+  // 不支持的平台：必须显式识别并放弃，而不是落到某个桌面平台上
+  if (token.includes('iphone') || token.includes('ipad') || token.includes('ipod') || token.includes('ios')) {
+    return null;
+  }
+  if (token.includes('cros') || token.includes('crkey') || token.includes('chromeos')) {
+    return null;
+  }
+
   if (token.includes('android')) return 'android';
-  if (token.includes('win')) return 'windows';
-  if (token.includes('mac') || token.includes('darwin') || token.includes('iphone') || token.includes('ipad')) {
+  if (token.includes('mac') || token.includes('darwin') || token.includes('osx') || token.includes('apple')) {
     return 'macos';
   }
-  if (token.includes('linux') || token.includes('x11') || token.includes('crkey')) {
-    // CrOS 不支持本仓库的 Linux 安装包格式，但归入 Linux 比归入「未知」更少误导；
-    // 真正的兼容性判定发生在包类型层面（deb/rpm/AppImage）。
+  if (token.includes('windows') || token.includes('win32') || token.includes('win64') || token.includes('win')) {
+    return 'windows';
+  }
+  if (token.includes('linux') || token.includes('x11') || token.includes('ubuntu') || token.includes('bsd')) {
     return 'linux';
   }
   return null;
+}
+
+/**
+ * 任一设备信号表明是不支持的平台（iOS / ChromeOS）时返回 true。
+ *
+ * 单看 `navigator.platform` 不够：ChromeOS 上它是 `Linux x86_64`，会被当成 Linux；
+ * iPad 也可能报 `MacIntel`。因此把三个信号一起看，只要有任何一个指向不支持的平台
+ * 就放弃识别，而不是退回到某个桌面平台。
+ */
+function isUnsupportedPlatform(): boolean {
+  const signals = [readUserAgentData()?.platform, navigator.platform, navigator.userAgent];
+  return signals.some((signal) => {
+    const token = (signal ?? '').toLowerCase();
+    if (/(?<![a-z])(?:iphone|ipad|ipod|ios)(?![a-z])/.test(token)) return true;
+    return token.includes('cros') || token.includes('crkey') || token.includes('chromeos');
+  });
 }
 
 /**
@@ -57,6 +92,7 @@ function normalizePlatformToken(value: string | undefined | null): InstallablePl
  */
 export function detectDevicePlatformSync(): InstallablePlatform | null {
   if (typeof navigator === 'undefined') return null;
+  if (isUnsupportedPlatform()) return null;
   const fromUAData = normalizePlatformToken(readUserAgentData()?.platform);
   if (fromUAData) return fromUAData;
   const fromPlatform = normalizePlatformToken(navigator.platform);

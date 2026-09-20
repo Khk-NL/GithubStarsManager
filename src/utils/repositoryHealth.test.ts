@@ -155,6 +155,45 @@ describe('deriveRepositoryHealthSnapshot', () => {
     expect(knownEmpty.releasesPerYear).toBe(0);
   });
 
+  it('does not report a release total as a per-year frequency when the age is unknown', () => {
+    // created_at 不可解析 → 没有时间窗口可以换算「频率」。
+    // 此时把 Release 总数当成「次/年」是错的（例如 3 条会被读成 3 次/年）。
+    const snapshot = deriveRepositoryHealthSnapshot(
+      makeRepo({ created_at: 'not-a-date', has_fetched_releases: true }),
+      [
+        makeRelease({ id: 1, tag_name: 'v1', published_at: '2025-01-01T00:00:00.000Z' }),
+        makeRelease({ id: 2, tag_name: 'v2', published_at: '2025-06-01T00:00:00.000Z' }),
+        makeRelease({ id: 3, tag_name: 'v3', published_at: '2026-01-01T00:00:00.000Z' }),
+      ],
+      undefined,
+      NOW,
+    );
+
+    expect(snapshot.releaseCount).toBe(3);
+    expect(snapshot.releasesPerYear).toBeNull();
+  });
+
+  it('keeps missing GitHub status fields unknown instead of reporting false', () => {
+    // 后端 schema 不存储这些列，旧数据也可能缺失：必须保持 undefined，
+    // 否则面板会把「未知」显示成「否」，等于伪造事实。
+    const snapshot = deriveRepositoryHealthSnapshot(makeRepo(), [], undefined, NOW);
+    expect(snapshot.archived).toBeUndefined();
+    expect(snapshot.disabled).toBeUndefined();
+    expect(snapshot.fork).toBeUndefined();
+    expect(snapshot.isTemplate).toBeUndefined();
+
+    // 已知事实照实传递
+    const known = deriveRepositoryHealthSnapshot(
+      makeRepo({ archived: false, fork: true, is_template: false }),
+      [],
+      undefined,
+      NOW,
+    );
+    expect(known.archived).toBe(false);
+    expect(known.fork).toBe(true);
+    expect(known.isTemplate).toBe(false);
+  });
+
   it('falls back to updated_at when pushed_at is unusable, like the MCP mirrors', () => {
     const snapshot = deriveRepositoryHealthSnapshot(
       makeRepo({ pushed_at: 'not-a-date', updated_at: '2026-09-10T00:00:00.000Z' }),
@@ -290,9 +329,17 @@ describe('groupRepositoryHealthFacts', () => {
 });
 
 describe('list filter predicates', () => {
-  it('treats missing archived as not archived', () => {
-    expect(isArchivedRepository(makeRepo())).toBe(false);
+  it('keeps a missing archived field unknown instead of claiming it is not archived', () => {
+    // 未知必须是 undefined：否则 healthArchived=false 会把本地没有该字段的仓库也算进来
+    expect(isArchivedRepository(makeRepo())).toBeUndefined();
     expect(isArchivedRepository(makeRepo({ archived: true }))).toBe(true);
+    expect(isArchivedRepository(makeRepo({ archived: false }))).toBe(false);
+  });
+
+  it('never matches unknown archived with either filter value', () => {
+    const unknown = isArchivedRepository(makeRepo());
+    expect(unknown === true).toBe(false);
+    expect(unknown === false).toBe(false);
   });
 
   it('falls back to updated_at for recent activity', () => {
