@@ -1,8 +1,7 @@
 
 import { TranslateFn } from '../../i18n/useT';
 import React from 'react';
-import { ExternalLink, Github, Globe, Key, Mail, Monitor, Package, Clock, Twitter } from 'lucide-react';
-import { ExternalLink, Github, Globe, Key, Mail, Monitor, Package, ClipboardPaste, Twitter } from 'lucide-react';
+import { ExternalLink, Github, Globe, Key, Mail, Monitor, Package, Clock, ClipboardPaste, Twitter } from 'lucide-react';
 import { UpdateChecker } from '../UpdateChecker';
 import { useAppStore } from '../../store/useAppStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -208,6 +207,12 @@ export const GeneralPanel: React.FC<GeneralPanelProps> = ({ t }) => {
               {t('generalPanel.clear-recently-viewed')}
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center space-x-3">
             <ClipboardPaste className="h-5 w-5 text-muted-foreground dark:text-muted-foreground" />
             <CardTitle>{t('generalPanel.clipboard-detection')}</CardTitle>
           </div>
