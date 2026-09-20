@@ -1196,5 +1196,11 @@
     "download": "下载",
     "detected-from-filenames-and-release-metadata-no": "按文件名与 Release 元数据识别，未验证安装包安全性，也不会自动运行。你始终可以在下方资产列表中手动选择其他资产。",
     "excluded-v1-asset-s-that-do-not-apply-to-this-de": "已排除 {{v1}} 个不适用于当前设备的资产（源代码、校验和、签名、调试符号、blockmap、其他平台/架构）。"
+  },
+  "clipboardLinkBanner": {
+    "github-link-found": "剪贴板里有一个 GitHub 链接：{{v1}}",
+    "open": "打开",
+    "dismiss": "忽略"
   }
+
 }

@@ -28,6 +28,8 @@ export const createInitialState = (): AppState => ({
       recentlyViewed: [],
       recentlyViewedEnabled: true,
       discoveryHideSeen: false,
+      // 剪贴板识别默认关闭（开发守则 §11）
+      clipboardDetectionEnabled: false,
       gists: [],
       starredGists: [],
       gistSearchFilters: initialGistSearchFilters,

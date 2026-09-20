@@ -77,6 +77,8 @@
     "record-recently-viewed": "閲覧履歴を記録する",
     "recently-viewed-hint": "この端末にのみ保存されます。アップロードされず、プラグインからも参照できません。",
     "recently-viewed-count-kept-locally": "{{count}} 件を保存中",
-    "clear-recently-viewed": "履歴を消去"
+    "clear-recently-viewed": "履歴を消去",
+    "clipboard-detection": "クリップボードの検出",
+    "clipboard-detection-hint": "有効にすると、ウィンドウに戻ったときだけクリップボードを一度読み取り、GitHub リンクを判定します。GitHub 以外の内容は即座に破棄され、保存も常時監視も行いません。"
   }
 }

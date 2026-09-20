@@ -77,6 +77,8 @@
     "record-recently-viewed": "최근 본 항목 기록",
     "recently-viewed-hint": "이 기기에만 저장됩니다. 업로드되지 않으며 플러그인도 읽을 수 없습니다.",
     "recently-viewed-count-kept-locally": "{{count}}개 저장됨",
-    "clear-recently-viewed": "기록 지우기"
+    "clear-recently-viewed": "기록 지우기",
+    "clipboard-detection": "클립보드 감지",
+    "clipboard-detection-hint": "켜면 창으로 돌아올 때마다 클립보드를 한 번만 읽어 GitHub 링크인지 확인합니다. GitHub이 아닌 내용은 즉시 버려지며, 저장하거나 백그라운드에서 감시하지 않습니다."
   }
 }

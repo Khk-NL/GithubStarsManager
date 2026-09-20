@@ -77,6 +77,8 @@
     "record-recently-viewed": "Registrar los vistos recientemente",
     "recently-viewed-hint": "Solo se guarda en este dispositivo. No se sube nada y los plugins no pueden leerlo.",
     "recently-viewed-count-kept-locally": "{{count}} entradas guardadas",
-    "clear-recently-viewed": "Borrar historial"
+    "clear-recently-viewed": "Borrar historial",
+    "clipboard-detection": "Detección del portapapeles",
+    "clipboard-detection-hint": "Al activarlo, el portapapeles se lee una vez cada vez que vuelves a la ventana, solo para reconocer enlaces de GitHub. Lo demás se descarta de inmediato; nunca se guarda ni se vigila en segundo plano."
   }
 }

@@ -484,6 +484,9 @@ export interface AppState {
   recentlyViewedEnabled: boolean;
   /** Discovery 是否隐藏已浏览过的仓库。 */
   discoveryHideSeen: boolean;
+  // Clipboard GitHub link detection（开发守则 §11）
+  /** 默认关闭；开启后只在前台 focus 时读一次剪贴板，不做后台监控。 */
+  clipboardDetectionEnabled: boolean;
 
   // Gists
   gists: Gist[];

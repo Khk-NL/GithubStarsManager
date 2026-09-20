@@ -77,6 +77,8 @@
     "record-recently-viewed": "Zuletzt angesehene aufzeichnen",
     "recently-viewed-hint": "Wird nur auf diesem Gerät gespeichert. Nichts wird hochgeladen, Plugins haben keinen Zugriff.",
     "recently-viewed-count-kept-locally": "{{count}} Einträge gespeichert",
-    "clear-recently-viewed": "Verlauf löschen"
+    "clear-recently-viewed": "Verlauf löschen",
+    "clipboard-detection": "Zwischenablage erkennen",
+    "clipboard-detection-hint": "Wenn aktiviert, wird die Zwischenablage einmal gelesen, sobald du zum Fenster zurückkehrst – nur um GitHub-Links zu erkennen. Alles andere wird sofort verworfen; der Inhalt wird weder gespeichert noch im Hintergrund überwacht."
   }
 }

@@ -77,6 +77,8 @@
     "record-recently-viewed": "Record recently viewed repositories",
     "recently-viewed-hint": "Kept on this device only. Nothing is uploaded and plugins cannot read it.",
     "recently-viewed-count-kept-locally": "{{count}} entries kept",
-    "clear-recently-viewed": "Clear history"
+    "clear-recently-viewed": "Clear history",
+    "clipboard-detection": "Clipboard detection",
+    "clipboard-detection-hint": "When enabled, the clipboard is read once each time you switch back to the window, only to recognize GitHub links. Anything else is discarded immediately; the clipboard is never stored and never watched in the background."
   }
 }

@@ -77,6 +77,8 @@
     "record-recently-viewed": "Registrar os vistos recentemente",
     "recently-viewed-hint": "Fica apenas neste dispositivo. Nada é enviado e plugins não podem ler.",
     "recently-viewed-count-kept-locally": "{{count}} entradas guardadas",
-    "clear-recently-viewed": "Apagar histórico"
+    "clear-recently-viewed": "Apagar histórico",
+    "clipboard-detection": "Detecção da área de transferência",
+    "clipboard-detection-hint": "Ao ativar, a área de transferência é lida uma vez sempre que você volta para a janela, apenas para reconhecer links do GitHub. O resto é descartado na hora; nunca é guardado nem monitorado em segundo plano."
   }
 }

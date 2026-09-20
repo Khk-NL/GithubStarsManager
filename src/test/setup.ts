@@ -109,6 +109,10 @@ vi.mock('../store/useAppStore', () => ({
       clearRecentlyViewed: vi.fn(),
       setRecentlyViewedEnabled: vi.fn(),
       setDiscoveryHideSeen: vi.fn(),
+      repositories: [],
+      // 开发守则 §11：剪贴板识别默认关闭
+      clipboardDetectionEnabled: false,
+      setClipboardDetectionEnabled: vi.fn(),
     };
     return selector ? selector(state) : state;
   }),

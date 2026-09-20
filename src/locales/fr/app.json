@@ -1196,6 +1196,12 @@
     "download": "Télécharger",
     "detected-from-filenames-and-release-metadata-no": "Détecté à partir des noms de fichiers et des métadonnées de la Release. Aucun contrôle de sécurité n'est effectué et rien ne s'exécute automatiquement. Vous pouvez toujours choisir un autre fichier dans la liste ci-dessous.",
     "excluded-v1-asset-s-that-do-not-apply-to-this-de": "{{v1}} fichier(s) écarté(s) car ils ne concernent pas cet appareil (code source, sommes de contrôle, signatures, symboles de débogage, blockmaps, autres plateformes ou architectures)."
+  },
+
+  "clipboardLinkBanner": {
+    "github-link-found": "Un lien GitHub se trouve dans le presse-papiers : {{v1}}",
+    "open": "Ouvrir",
+    "dismiss": "Ignorer"
   }
 
 }

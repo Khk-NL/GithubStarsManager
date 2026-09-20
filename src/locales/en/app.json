@@ -1196,5 +1196,11 @@
     "download": "Download",
     "detected-from-filenames-and-release-metadata-no": "Detected from filenames and release metadata. No safety check is performed and nothing runs automatically. You can always pick another asset in the list below.",
     "excluded-v1-asset-s-that-do-not-apply-to-this-de": "Excluded {{v1}} asset(s) that do not apply to this device (source code, checksums, signatures, debug symbols, blockmaps, other platforms or architectures)."
+  },
+  "clipboardLinkBanner": {
+    "github-link-found": "GitHub link on your clipboard: {{v1}}",
+    "open": "Open",
+    "dismiss": "Dismiss"
   }
+
 }

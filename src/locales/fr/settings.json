@@ -77,6 +77,8 @@
     "record-recently-viewed": "Enregistrer les dépôts consultés",
     "recently-viewed-hint": "Conservé uniquement sur cet appareil. Rien n'est envoyé et les plugins n'y ont pas accès.",
     "recently-viewed-count-kept-locally": "{{count}} entrées conservées",
-    "clear-recently-viewed": "Effacer l'historique"
+    "clear-recently-viewed": "Effacer l'historique",
+    "clipboard-detection": "Détection du presse-papiers",
+    "clipboard-detection-hint": "Une fois activé, le presse-papiers est lu une seule fois à chaque retour dans la fenêtre, uniquement pour reconnaître les liens GitHub. Le reste est écarté immédiatement ; rien n'est conservé ni surveillé en arrière-plan."
   }
 }

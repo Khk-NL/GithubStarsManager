@@ -2,6 +2,7 @@
 import { TranslateFn } from '../../i18n/useT';
 import React from 'react';
 import { ExternalLink, Github, Globe, Key, Mail, Monitor, Package, Clock, Twitter } from 'lucide-react';
+import { ExternalLink, Github, Globe, Key, Mail, Monitor, Package, ClipboardPaste, Twitter } from 'lucide-react';
 import { UpdateChecker } from '../UpdateChecker';
 import { useAppStore } from '../../store/useAppStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -31,6 +32,8 @@ export const GeneralPanel: React.FC<GeneralPanelProps> = ({ t }) => {
     setRecentlyViewedEnabled,
     recentlyViewedCount,
     clearRecentlyViewed,
+    clipboardDetectionEnabled,
+    setClipboardDetectionEnabled,
   } = useAppStore(useShallow((state) => ({
     language: state.language,
     setLanguage: state.setLanguage,
@@ -39,6 +42,8 @@ export const GeneralPanel: React.FC<GeneralPanelProps> = ({ t }) => {
     setRecentlyViewedEnabled: state.setRecentlyViewedEnabled,
     recentlyViewedCount: state.recentlyViewed.length,
     clearRecentlyViewed: state.clearRecentlyViewed,
+    clipboardDetectionEnabled: state.clipboardDetectionEnabled,
+    setClipboardDetectionEnabled: state.setClipboardDetectionEnabled,
   })));
   const desktop = useDesktopActions({ t });
   const githubToken = useGitHubTokenActions({ t });
@@ -202,6 +207,19 @@ export const GeneralPanel: React.FC<GeneralPanelProps> = ({ t }) => {
             >
               {t('generalPanel.clear-recently-viewed')}
             </Button>
+          </div>
+            <ClipboardPaste className="h-5 w-5 text-muted-foreground dark:text-muted-foreground" />
+            <CardTitle>{t('generalPanel.clipboard-detection')}</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground dark:text-muted-foreground">{t('generalPanel.clipboard-detection-hint')}</p>
+            <Switch
+              aria-label={t('generalPanel.clipboard-detection')}
+              checked={clipboardDetectionEnabled}
+              onCheckedChange={setClipboardDetectionEnabled}
+            />
           </div>
         </CardContent>
       </Card>

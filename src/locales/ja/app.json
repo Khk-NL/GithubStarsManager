@@ -1196,6 +1196,12 @@
     "download": "ダウンロード",
     "detected-from-filenames-and-release-metadata-no": "ファイル名と Release メタデータから判定しています。安全性の検証は行わず、自動実行も行いません。下のアセット一覧からいつでも別のアセットを選べます。",
     "excluded-v1-asset-s-that-do-not-apply-to-this-de": "このデバイスに該当しないアセット（ソースコード、チェックサム、署名、デバッグシンボル、blockmap、他のプラットフォームやアーキテクチャ）を {{v1}} 件除外しました。"
+  },
+
+  "clipboardLinkBanner": {
+    "github-link-found": "クリップボードに GitHub リンクがあります: {{v1}}",
+    "open": "開く",
+    "dismiss": "無視"
   }
 
 }

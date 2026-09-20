@@ -5,6 +5,7 @@ import { createInitialState } from './initialState';
 import { appPersistenceOptions } from './persistence/options';
 import { createAuthSlice } from './slices/authSlice';
 import { createCategorySlice } from './slices/categorySlice';
+import { createClipboardSlice } from './slices/clipboardSlice';
 import { createConfigurationSlice } from './slices/configurationSlice';
 import { createDiscoverySlice } from './slices/discoverySlice';
 import { createGistSlice } from './slices/gistSlice';
@@ -41,6 +42,7 @@ export const useAppStore = create<AppStoreState>()(
       ...createPreferenceSlice(set, get),
       ...createDiscoverySlice(set, get),
       ...createRecentlyViewedSlice(set, get),
+      ...createClipboardSlice(set, get),
     }),
     appPersistenceOptions,
   ),

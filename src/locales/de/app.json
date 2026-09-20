@@ -1196,6 +1196,12 @@
     "download": "Herunterladen",
     "detected-from-filenames-and-release-metadata-no": "Erkannt anhand von Dateinamen und Release-Metadaten. Es findet keine Sicherheitsprüfung statt und es wird nichts automatisch ausgeführt. Du kannst unten jederzeit eine andere Datei auswählen.",
     "excluded-v1-asset-s-that-do-not-apply-to-this-de": "{{v1}} Datei(en) ausgeschlossen, die nicht zu diesem Gerät passen (Quellcode, Prüfsummen, Signaturen, Debug-Symbole, Blockmaps, andere Plattformen oder Architekturen)."
+  },
+
+  "clipboardLinkBanner": {
+    "github-link-found": "GitHub-Link in der Zwischenablage: {{v1}}",
+    "open": "Öffnen",
+    "dismiss": "Verwerfen"
   }
 
 }

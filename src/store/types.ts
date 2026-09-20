@@ -268,6 +268,8 @@ export interface AppActions {
   clearRecentlyViewed: () => void;
   setRecentlyViewedEnabled: (enabled: boolean) => void;
   setDiscoveryHideSeen: (enabled: boolean) => void;
+  // Clipboard GitHub link detection（开发守则 §11）
+  setClipboardDetectionEnabled: (enabled: boolean) => void;
 }
 
 export type AppStoreState = AppState & AppActions;

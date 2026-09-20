@@ -67,6 +67,7 @@ export type PersistedAppState = Partial<
     | 'recentlyViewed'
     | 'recentlyViewedEnabled'
     | 'discoveryHideSeen'
+    | 'clipboardDetectionEnabled'
     | 'embeddingConfigs'
     | 'activeEmbeddingConfig'
     | 'vectorSearchConfig'
