@@ -1321,7 +1321,7 @@ export const SearchBar: React.FC = () => {
               这里刻意不放「健康 / 不健康」之类主观筛选，只按可验证事实过滤。 */}
           <div>
             <h4 className="text-sm font-medium text-foreground dark:text-foreground mb-3">
-              {t('仓库健康事实', 'Repository Health Facts')}
+              {t('searchBar.repository-health-facts')}
             </h4>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -1329,42 +1329,42 @@ export const SearchBar: React.FC = () => {
                   healthArchived: searchFilters.healthArchived === true ? undefined : true,
                 })}
                 aria-pressed={searchFilters.healthArchived === true}
-                title={t('只显示已归档的仓库', 'Show only archived repositories')}
+                title={t('searchBar.show-only-archived-repositories')}
                 variant="ghost"
                 className={`${filterChipBaseClass} ${
                   searchFilters.healthArchived === true ? filterChipActiveClass : filterChipInactiveClass
                 }`}
               >
                 <Archive className="w-4 h-4" />
-                <span>{t('已归档', 'Archived')}</span>
+                <span>{t('searchBar.archived')}</span>
               </Button>
               <Button
                 onClick={() => setSearchFilters({
                   healthRecentActivity: searchFilters.healthRecentActivity === true ? undefined : true,
                 })}
                 aria-pressed={searchFilters.healthRecentActivity === true}
-                title={t('只显示近 12 个月内有推送的仓库', 'Show only repositories pushed within the last 12 months')}
+                title={t('searchBar.show-only-repositories-pushed-within-the-last-12')}
                 variant="ghost"
                 className={`${filterChipBaseClass} ${
                   searchFilters.healthRecentActivity === true ? filterChipActiveClass : filterChipInactiveClass
                 }`}
               >
                 <Clock className="w-4 h-4" />
-                <span>{t('近 12 个月有推送', 'Pushed in 12 months')}</span>
+                <span>{t('searchBar.pushed-in-12-months')}</span>
               </Button>
               <Button
                 onClick={() => setSearchFilters({
                   healthHasLicense: searchFilters.healthHasLicense === false ? undefined : false,
                 })}
                 aria-pressed={searchFilters.healthHasLicense === false}
-                title={t('只显示未声明许可证的仓库', 'Show only repositories without a declared license')}
+                title={t('searchBar.show-only-repositories-without-a-declared-licens')}
                 variant="ghost"
                 className={`${filterChipBaseClass} ${
                   searchFilters.healthHasLicense === false ? filterChipActiveClass : filterChipInactiveClass
                 }`}
               >
                 <AlertCircle className="w-4 h-4" />
-                <span>{t('未声明许可证', 'No declared license')}</span>
+                <span>{t('searchBar.no-declared-license')}</span>
               </Button>
             </div>
           </div>

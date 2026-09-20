@@ -177,7 +177,7 @@ const ReleaseContent: React.FC<{
       </TabsList>
       <TabsContent value="assets" className="mt-3">
         <ReleasePluginRecommendations release={release} repository={repository} language={language} />
-        <InstallableAssetRecommendation release={release} language={language} onDownload={onDownload} />
+        <InstallableAssetRecommendation release={release} onDownload={onDownload} />
         <ReleaseAssetsTable
           release={release}
           assetPage={assetPage}

@@ -298,7 +298,14 @@
     "sort-files": "按文件数",
     "sort-stars": "按星标排序",
     "sort-starred": "按加星时间排序",
-    "sync-lists-confirm-body": "将拉取你的 GitHub Lists（星标列表）并应用到本地仓库：\n\n· 每个 list 名会作为标签添加到对应仓库（一个仓库可属于多个 list/分类）\n· 未锁定分类的仓库将应用 list 对应的分类并默认锁定\n· 已锁定分类的仓库保持不变\n\n确定继续吗？"
+    "sync-lists-confirm-body": "将拉取你的 GitHub Lists（星标列表）并应用到本地仓库：\n\n· 每个 list 名会作为标签添加到对应仓库（一个仓库可属于多个 list/分类）\n· 未锁定分类的仓库将应用 list 对应的分类并默认锁定\n· 已锁定分类的仓库保持不变\n\n确定继续吗？",
+    "repository-health-facts": "仓库健康事实",
+    "show-only-archived-repositories": "只显示已归档的仓库",
+    "archived": "已归档",
+    "show-only-repositories-pushed-within-the-last-12": "只显示近 12 个月内有推送的仓库",
+    "pushed-in-12-months": "近 12 个月有推送",
+    "show-only-repositories-without-a-declared-licens": "只显示未声明许可证的仓库",
+    "no-declared-license": "未声明许可证"
   },
   "searchDemo": {
     "search-feature-upgrade": "搜索功能升级",
@@ -1174,5 +1181,20 @@
   "repositoryEditModal": {
     "char-count": "{{count}} 字",
     "tag-count": "{{count}} 个标签"
+  },
+  "installableAssetRecommendation": {
+    "confidence-high": "高置信",
+    "confidence-medium": "中等置信",
+    "confidence-low": "低置信",
+    "installable-candidates": "可安装候选",
+    "platform-not-detected": "未识别出平台",
+    "detecting-architecture": "正在识别架构…",
+    "assets-for-this-device": "适配当前设备的资产",
+    "matches-this-device": "适配当前设备",
+    "download-this-build": "下载此版本",
+    "other-candidates-v1": "其他可选资产（{{v1}}）",
+    "download": "下载",
+    "detected-from-filenames-and-release-metadata-no": "按文件名与 Release 元数据识别，未验证安装包安全性，也不会自动运行。你始终可以在下方资产列表中手动选择其他资产。",
+    "excluded-v1-asset-s-that-do-not-apply-to-this-de": "已排除 {{v1}} 个不适用于当前设备的资产（源代码、校验和、签名、调试符号、blockmap、其他平台/架构）。"
   }
 }

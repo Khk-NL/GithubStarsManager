@@ -257,7 +257,9 @@ function isSupportedTSource(sourceFile, call) {
   const expr = call.getExpression();
   const definition = expr.getDefinitionNodes?.()[0] ?? expr.getDefinition?.()[0]?.getDeclarationNode?.();
   if (!definition) return false;
-  if (Node.isParameter(definition)) {
+  // ts-morph 28 的 API 名是 isParameterDeclaration（没有 Node.isParameter），
+  // 否则脚本在这里抛 TypeError: Node.isParameter is not a function 而整跑失败。
+  if (Node.isParameterDeclaration(definition)) {
     const typeText = definition.getTypeNode()?.getText() ?? '';
     return definition.getName() === 't' && (typeText.includes('TranslateFn') || typeText.includes('zh'));
   }

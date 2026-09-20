@@ -1,7 +1,8 @@
+import { useT } from "../i18n/useT";
 import React, { useEffect, useMemo, useState } from 'react';
 import { Download, Info, ShieldQuestion } from 'lucide-react';
 import type { Release } from '../types';
-import type { InstallableArchitecture, InstallableConfidence, InstallablePlatform } from '../types/installableAsset';
+import type { InstallableArchitecture, InstallablePlatform } from '../types/installableAsset';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { getPlatformDisplayName, getPlatformIcon } from './platformMeta';
@@ -24,7 +25,6 @@ import { formatFileSize } from '../utils/formatBytes';
  */
 interface InstallableAssetRecommendationProps {
   release: Release;
-  language: 'zh' | 'en';
   /** 复用 Release 资产表同一条下载链路（RPC / 认证下载 / 后端代理）。 */
   onDownload: (link: ReleaseDownloadLink) => void;
 }
@@ -36,22 +36,23 @@ const ARCHITECTURE_LABELS: Record<InstallableArchitecture, string> = {
   universal: 'Universal',
 };
 
-const CONFIDENCE_LABELS: Record<InstallableConfidence, { zh: string; en: string }> = {
-  high: { zh: '高置信', en: 'High confidence' },
-  medium: { zh: '中等置信', en: 'Medium confidence' },
-  low: { zh: '低置信', en: 'Low confidence' },
-};
-
 export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommendationProps> = ({
   release,
-  language,
   onDownload,
 }) => {
-  const t = (zh: string, en: string) => (language === 'zh' ? zh : en);
+  const t = useT('app');
 
   // 平台可同步得到（Electron/Chromium 报告宿主 OS，Web 版报告浏览器所在设备）。
   const [platform, setPlatform] = useState<InstallablePlatform | null>(() => detectDevicePlatformSync());
   const [architecture, setArchitecture] = useState<InstallableArchitecture | undefined>(undefined);
+  /**
+   * 架构探测是否已结束。
+   *
+   * 必需状态：`architecture === undefined` 同时表示「还在探测」和「确实拿不到」，
+   * 两者混在一起会让首次渲染就保留全部架构并立刻启用下载按钮——在 arm64 设备上，
+   * 若 x64 资产排序更靠前，用户可能在探测完成前下到错误架构的包。
+   */
+  const [architectureSettled, setArchitectureSettled] = useState(false);
 
   useEffect(() => {
     setPlatform(detectDevicePlatformSync());
@@ -60,7 +61,9 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
   useEffect(() => {
     let active = true;
     void resolveDeviceArchitecture().then((resolved) => {
-      if (active) setArchitecture(resolved);
+      if (!active) return;
+      setArchitecture(resolved);
+      setArchitectureSettled(true);
     });
     return () => {
       active = false;
@@ -91,6 +94,10 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
   const [best, ...alternatives] = detection.matches;
   const bestLink = linksByAssetId.get(best.assetId);
   const PlatformIcon = getPlatformIcon(best.platform);
+  // 平台未知时不要声称「适配当前设备」：此时候选是并列的全部平台，不是设备匹配结果。
+  const platformKnown = platform !== null;
+  // 架构探测结束前禁用下载：否则可能在探测完成前下到错误架构的包。
+  const downloadEnabled = architectureSettled;
 
   const describe = (match: typeof best) => {
     // 平台显示名复用 platformMeta，避免再维护一份平台名表。
@@ -100,24 +107,31 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
     return parts.join(' · ');
   };
 
+  const deviceSummary = !platformKnown
+    ? t('installableAssetRecommendation.platform-not-detected')
+    : !architectureSettled
+      ? t('installableAssetRecommendation.detecting-architecture')
+      : `${getPlatformDisplayName(platform)}${architecture ? ` · ${ARCHITECTURE_LABELS[architecture]}` : ''}`;
+
   return (
     <section
       className="mb-3 rounded-md border border-border bg-muted/20 px-3 py-3"
       data-testid="installable-asset-recommendation"
-      aria-label={t('适配当前设备的资产', 'Assets for this device')}
+      aria-label={
+        platformKnown
+          ? t('installableAssetRecommendation.assets-for-this-device')
+          : t('installableAssetRecommendation.installable-candidates')
+      }
     >
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <h3 className="text-xs font-semibold">{t('适配当前设备', 'Matches this device')}</h3>
-        {platform && (
-          <span className="text-[11px] text-muted-foreground">
-            {getPlatformDisplayName(platform)}
-            {architecture ? ` · ${ARCHITECTURE_LABELS[architecture]}` : ''}
-          </span>
-        )}
+        <h3 className="text-xs font-semibold">
+          {platformKnown
+            ? t('installableAssetRecommendation.matches-this-device')
+            : t('installableAssetRecommendation.installable-candidates')}
+        </h3>
+        <span className="text-[11px] text-muted-foreground">{deviceSummary}</span>
         <Badge variant="outline" className="text-[11px] font-normal">
-          {language === 'zh'
-            ? CONFIDENCE_LABELS[best.confidence].zh
-            : CONFIDENCE_LABELS[best.confidence].en}
+          {t(`installableAssetRecommendation.confidence-${best.confidence}`)}
         </Badge>
       </div>
 
@@ -135,18 +149,18 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
           type="button"
           variant="secondary"
           size="sm"
-          disabled={!bestLink}
+          disabled={!bestLink || !downloadEnabled}
           onClick={() => bestLink && onDownload(bestLink)}
         >
           <Download className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-          {t('下载此版本', 'Download this build')}
+          {t('installableAssetRecommendation.download-this-build')}
         </Button>
       </div>
 
       {alternatives.length > 0 && (
         <div className="mt-2 border-t border-border pt-2">
           <p className="mb-1 text-[11px] text-muted-foreground">
-            {t(`其他可选资产（${alternatives.length}）`, `Other candidates (${alternatives.length})`)}
+            {t('installableAssetRecommendation.other-candidates-v1', { v1: alternatives.length })}
           </p>
           <ul className="space-y-1">
             {alternatives.map((match) => {
@@ -164,10 +178,10 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
                     variant="ghost"
                     size="sm"
                     className="h-6 px-2 text-[11px]"
-                    disabled={!link}
+                    disabled={!link || !downloadEnabled}
                     onClick={() => link && onDownload(link)}
                   >
-                    {t('下载', 'Download')}
+                    {t('installableAssetRecommendation.download')}
                   </Button>
                 </li>
               );
@@ -179,10 +193,7 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
       <p className="mt-2 flex items-start gap-1 text-[11px] text-muted-foreground">
         <ShieldQuestion className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
         <span>
-          {t(
-            '按文件名与 Release 元数据识别，未验证安装包安全性，也不会自动运行。你始终可以在下方资产列表中手动选择其他资产。',
-            'Detected from filenames and release metadata. No safety check is performed and nothing runs automatically. You can always pick another asset in the list below.',
-          )}
+          {t('installableAssetRecommendation.detected-from-filenames-and-release-metadata-no')}
         </span>
       </p>
 
@@ -190,10 +201,7 @@ export const InstallableAssetRecommendation: React.FC<InstallableAssetRecommenda
         <p className="mt-1 flex items-start gap-1 text-[11px] text-muted-foreground">
           <Info className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
           <span title={detection.excluded.map((entry) => `${entry.fileName}: ${entry.reason}`).join('\n')}>
-            {t(
-              `已排除 ${detection.excluded.length} 个不适用于当前设备的资产（源代码、校验和、签名、调试符号、blockmap、其他平台/架构）。`,
-              `Excluded ${detection.excluded.length} asset(s) that do not apply to this device (source code, checksums, signatures, debug symbols, blockmaps, other platforms or architectures).`,
-            )}
+            {t('installableAssetRecommendation.excluded-v1-asset-s-that-do-not-apply-to-this-de', { v1: detection.excluded.length })}
           </span>
         </p>
       )}
