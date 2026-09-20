@@ -654,4 +654,12 @@
     </changelog>
     <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.1</downloadUrl>
   </version>
+  <version>
+    <number>0.9.2</number>
+    <releaseDate>2026-09-20</releaseDate>
+    <changelog>
+      <item>阶段 5：最近浏览（本地记录、可关闭可清空、Discovery 隐藏已浏览）</item>
+    </changelog>
+    <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.2</downloadUrl>
+  </version>
 </versions>
