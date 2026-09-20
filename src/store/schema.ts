@@ -53,6 +53,7 @@ export type PersistedAppState = Partial<
     | 'githubToken'
     | 'isAuthenticated'
     | 'backendApiSecret'
+    | 'accountWorkspaces'
     | 'repositories'
     | 'gists'
     | 'starredGists'

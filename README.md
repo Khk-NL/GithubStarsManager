@@ -110,7 +110,7 @@ Subscribe to repositories and watch every new version land in one unified timeli
 
 **Also included**
 
-Fork sync and GitHub Actions, Gist browse/edit with AI summaries, 12 theme presets, HTTP/SOCKS5 proxy, WebDAV backup, Discover (Trending / Hot Release / Most Popular), diagnostic logs, bilingual wiki jump, and a packaged desktop client.
+Fork sync and GitHub Actions, Gist browse/edit with AI summaries, 12 theme presets, HTTP/SOCKS5 proxy, WebDAV backup, Discover (Trending / Hot Release / Most Popular), diagnostic logs, bilingual wiki jump, local plugins, and a packaged desktop client.
 
 </td>
   </tr>
@@ -134,6 +134,7 @@ Fork sync and GitHub Actions, Gist browse/edit with AI summaries, 12 theme prese
 | **Remote Download (aria2)** | Send release assets to aria2 for download via JSON-RPC |
 | **Diagnostic Logs** | Unified frontend/backend log viewer with debug capture mode |
 | **Bilingual Wiki Jump** | Deepwiki (EN) or zread (ZH) based on repository language |
+| **Local plugins** | Electron-only extensions: repository actions, exporters, release recommendations, and sandboxed plugin pages. [Usage](https://github.com/AmintaCCCP/GithubStarsManager/wiki/Plugin-Usage-EN) · [Development](https://github.com/AmintaCCCP/GithubStarsManager/wiki/Plugin-Development-EN) |
 | **Packaged Client** | No environment setup required — download and run |
 
 ### Optional Backend Server
@@ -263,6 +264,7 @@ Ask concise questions about a single repository directly from its card. Each con
 | **Data Management** | Data import/export, clear local data, reset all data |
 | **Vector Search** | Configure Cloudflare Vectorize worker, embedding model, index mode (description / README), and manage index rebuild |
 | **MCP Server** | Enable MCP so agents (Claude Code, Cursor, etc.) can search your AI-enriched stars via Streamable HTTP / SSE with Bearer-token auth |
+| **Plugins** | Install local plugins, grant permissions, configure SearXNG for page search. Desktop only — see the [plugin wiki](https://github.com/AmintaCCCP/GithubStarsManager/wiki) |
 
 **Appearance:** Select any of the 12 built-in theme presets in **Settings → General → Appearance**. Every preset includes coordinated light and dark palettes and applies immediately across the application.
 
@@ -275,6 +277,16 @@ Ask concise questions about a single repository directly from its card. Each con
 - **Custom Endpoints** — Supports privately deployed AI services
 - **Connection Testing** — Test API connection after configuration
 - **AI Model Selection** — Choose the specific model to use
+
+## 🌍 Interface Languages
+
+The UI ships in **10 languages**: 简体中文 · English · 日本語 · Español · Português (Brasil) · Русский · 繁體中文 · Français · Deutsch · 한국어.
+
+- Switch anytime in **Settings → General → Language**, or via the language picker on the login screen; the choice is persisted per browser and the desktop client follows it too.
+- First launch picks up your browser/OS language automatically.
+- AI-generated content follows the UI language: repository summaries & tags, Gist summaries, Release changelog digests, and Repository Q&A answers are written in the selected language (built-in prompts; a custom prompt keeps full user control).
+- Built-in categories follow the UI language as well — display names, AI tag matching, and GitHub Lists syncing all rename automatically when you switch languages.
+- Missing translations gracefully fall back to English. Translation drafts are machine-assisted and get refined over time — **PRs for translation improvements are very welcome** ([`src/locales`](src/locales)).
 
 ## 🛠 Tech Stack
 
@@ -505,6 +517,16 @@ Let agents (Claude Code, Cursor, etc.) read your AI-enriched starred repositorie
 **Desktop (Electron) notes:** binds loopback (`127.0.0.1`) only — local agents only; host/port adjustable in Settings (default port `3927`).
 
 ![MCP](assets/readme/screenshots/mcp.png)
+
+## 🔌 Local plugins (desktop)
+
+The Electron app can load **trusted local plugins** from a directory. They stay disabled until you grant the permissions in their Manifest. Worker plugins run as isolated Node.js (not a security sandbox); page plugins run in a restricted iframe.
+
+- [Plugin usage](https://github.com/AmintaCCCP/GithubStarsManager/wiki/Plugin-Usage-EN) — install, enable, permissions, where actions appear
+- [Plugin development](https://github.com/AmintaCCCP/GithubStarsManager/wiki/Plugin-Development-EN) — Manifest, Worker API, page bridge, limits
+- Examples: [`examples/plugins/`](https://github.com/AmintaCCCP/GithubStarsManager/tree/main/examples/plugins)
+
+**Enable:** Settings → Plugins → Install local plugin. Browser and Docker frontend builds do not include this host.
 
 ## 🔄 GitHub Lists Bidirectional Sync
 

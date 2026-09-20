@@ -6,6 +6,7 @@ import { DEFAULT_THEME_PRESET_ID } from '../constants/themePresets';
 import { DEFAULT_XTWEET_FOLLOWS } from '../utils/xTweetFollows';
 import { DEFAULT_TELEGRAM_FOLLOWS } from '../utils/telegramFollows';
 import { readSessionBackendSecret } from './persistence/authStorage';
+import { detectInitialLanguage } from '../i18n/languages';
 import {
   defaultDiscoveryChannels,
   defaultMcpConfig,
@@ -21,6 +22,7 @@ export const createInitialState = (): AppState => ({
       user: null,
       githubToken: null,
       isAuthenticated: false,
+      accountWorkspaces: {},
       repositories: [],
       gists: [],
       starredGists: [],
@@ -67,7 +69,7 @@ export const createInitialState = (): AppState => ({
       hasHydrated: false,
       currentView: 'repositories',
       selectedCategory: 'all',
-      language: 'zh',
+      language: detectInitialLanguage(),
       translationEngine: 'microsoft',
       updateNotification: null,
       analysisProgress: { current: 0, total: 0 },

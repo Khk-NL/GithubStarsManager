@@ -8,10 +8,12 @@ import type {
 } from '../../types';
 import { defaultHeaderMenuConfig, defaultSubscriptionChannels } from '../../types';
 import { DEFAULT_THEME_PRESET_ID, isThemePresetId } from '../../constants/themePresets';
+import { isAppLanguage } from '../../i18n/languages';
 import { normalizeReleaseSourceSettings } from '../../utils/releaseSources';
 import { normalizeXTweetAuth, normalizeXTweetFollows } from '../../utils/xTweetFollows';
 import { normalizeTelegramFollows } from '../../utils/telegramFollows';
 import type { AppStoreState } from '../types';
+import { normalizeAccountWorkspaces } from '../helpers/accountWorkspace';
 import { readAuthMirror } from '../persistence/authStorage';
 import {
   defaultDiscoveryChannels,
@@ -84,6 +86,9 @@ export const normalizePersistedState = (
     user: resolvedUser,
     githubToken: resolvedGithubToken,
     backendApiSecret: resolvedBackendApiSecret,
+    accountWorkspaces: normalizeAccountWorkspaces(
+      (safePersisted as Record<string, unknown>).accountWorkspaces,
+    ),
     theme:
       safePersisted.theme === 'light' || safePersisted.theme === 'dark'
         ? safePersisted.theme
@@ -169,7 +174,7 @@ export const normalizePersistedState = (
     collapsedSidebarCategoryCount: typeof safePersisted.collapsedSidebarCategoryCount === 'number' && safePersisted.collapsedSidebarCategoryCount > 0 ? safePersisted.collapsedSidebarCategoryCount : 20,
     categoryMatchMode: safePersisted.categoryMatchMode === 'legacy' ? 'legacy' : 'effective',
     assetFilters: Array.isArray(safePersisted.assetFilters) && safePersisted.assetFilters.length > 0 ? safePersisted.assetFilters : defaultPresetFilters,
-    language: safePersisted.language || 'zh',
+    language: isAppLanguage(safePersisted.language) ? safePersisted.language : currentState.language,
     translationEngine: safePersisted.translationEngine === 'google' || safePersisted.translationEngine === 'ai'
       ? safePersisted.translationEngine
       : 'microsoft',

@@ -1,4 +1,5 @@
 import type { ThemePresetId } from '../constants/themePresets';
+import type { AppLanguage } from '../i18n/languages';
 
 import type { RepositoryChatSettings } from './repositoryChat';
 export type { RepositoryChatSettings } from './repositoryChat';
@@ -458,12 +459,34 @@ export const defaultHeaderMenuConfig: HeaderMenuItem[] = [
   { id: 'settings', visible: true, order: 5 },
 ];
 
+export interface AccountWorkspace {
+  repositories: Repository[];
+  lastSync: string | null;
+  gists: Gist[];
+  starredGists: Gist[];
+  selectedGistCategory: GistCategoryId;
+  releases: Release[];
+  releaseSubscriptions: number[];
+  releaseSourceSettings: ReleaseSourceSettings;
+  readReleases: number[];
+  forks: ForkRepo[];
+  readForks: number[];
+  customCategories: Category[];
+  hiddenDefaultCategoryIds: string[];
+  categoryOrder: string[];
+  defaultCategoryOverrides: Record<string, Partial<Category>>;
+  categoryListIdMap: Record<string, string>;
+  syncMode: SyncMode;
+  syncModeConfigured: boolean;
+}
+
 export interface AppState {
   // Auth
   user: GitHubUser | null;
   githubToken: string | null;
   isAuthenticated: boolean;
   hasHydrated: boolean;
+  accountWorkspaces: Record<string, AccountWorkspace>;
   
   // Repositories
   repositories: Repository[];
@@ -530,7 +553,7 @@ export interface AppState {
   themePreset: ThemePresetId;
   currentView: 'repositories' | 'gists' | 'releases' | 'forks' | 'settings' | 'subscription';
   selectedCategory: string;
-  language: 'zh' | 'en';
+  language: AppLanguage;
   /** README 文档翻译引擎（微软 / Google / AI），见 TranslationEngine */
   translationEngine: TranslationEngine;
   isSidebarCollapsed: boolean;

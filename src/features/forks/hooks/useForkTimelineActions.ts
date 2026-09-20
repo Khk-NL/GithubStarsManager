@@ -1,3 +1,4 @@
+import { useT } from "../../../i18n/useT";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import type { ForkRepo, GitHubOrganization, WorkflowDefinition } from '../../../types';
@@ -16,6 +17,12 @@ interface SyncModalState {
   branch: string;
   full_name: string;
 }
+
+const isSameGitHubLogin = (left?: string | null, right?: string | null): boolean =>
+  Boolean(left && right && left.toLowerCase() === right.toLowerCase());
+
+const matchesOwnerLogins = (login: string, owners: Iterable<string>): boolean =>
+  [...owners].some(owner => isSameGitHubLogin(login, owner));
 
 /** Owns ForkTimeline's remote GitHub workflows while the view remains presentational. */
 export const useForkTimelineActions = () => {
@@ -44,7 +51,7 @@ export const useForkTimelineActions = () => {
   });
   const [syncModalBranches, setSyncModalBranches] = useState<string[]>([]);
   const [isFetchingBranches, setIsFetchingBranches] = useState(false);
-  const t = useCallback((zh: string, en: string) => state.language === 'zh' ? zh : en, [state.language]);
+  const t = useT('common');
   const activeForkOwner = selectedForkOwner || personalOwnerLogin;
 
   useEffect(() => {
@@ -52,7 +59,7 @@ export const useForkTimelineActions = () => {
     setLoadedForkOwners(new Set());
   }, [personalOwnerLogin]);
 
-  const authSessionIdentity = `${state.githubToken ?? ''}\u0000${state.user?.id ?? ''}\u0000${state.user?.login ?? ''}`;
+  const authSessionIdentity = `${state.githubToken ?? ''}\u0000${state.user?.id ?? ''}`;
   const { captureSession, isCurrentSession } = useAuthSessionGeneration(authSessionIdentity);
   useEffect(() => {
     if (refreshRequestRef.current && !isCurrentSession(refreshRequestRef.current.session)) {
@@ -84,7 +91,7 @@ export const useForkTimelineActions = () => {
         logger.warn('githubApi', 'Failed to load fork owner organizations', error);
         if (!isCancelled) {
           setOrganizations([]);
-          toast(state.language === 'zh' ? '组织列表加载失败，请检查 GitHub token 权限。' : 'Failed to load organizations. Please check GitHub token permissions.', 'error');
+          toast(t('useForkTimelineActions.failed-to-load-organizations-please-check-github'), 'error');
         }
       } finally {
         if (!isCancelled) setIsLoadingOrganizations(false);
@@ -92,17 +99,17 @@ export const useForkTimelineActions = () => {
     };
     void loadOrganizations();
     return () => { isCancelled = true; };
-  }, [state.githubToken, state.language, personalOwnerLogin, toast]);
+  }, [state.githubToken, state.language, personalOwnerLogin, toast, t]);
 
   const ownerForks = useMemo(() => activeForkOwner
-    ? state.forks.filter(fork => fork.fork === true && fork.owner.login === activeForkOwner)
+    ? state.forks.filter(fork => fork.fork === true && isSameGitHubLogin(fork.owner.login, activeForkOwner))
     : [], [state.forks, activeForkOwner]);
   const forkOwnerOptions = useMemo(() => {
     const options = new Map<string, { id: string; login: string; isPersonal: boolean }>();
     if (personalOwnerLogin) options.set(personalOwnerLogin, { id: `user-${personalOwnerLogin}`, login: personalOwnerLogin, isPersonal: true });
     organizations.forEach(org => options.set(org.login, { id: `org-${org.id}`, login: org.login, isPersonal: false }));
     state.forks.forEach(fork => {
-      if (fork.fork && fork.owner.login !== personalOwnerLogin && !options.has(fork.owner.login)) {
+      if (fork.fork && !isSameGitHubLogin(fork.owner.login, personalOwnerLogin) && !options.has(fork.owner.login)) {
         options.set(fork.owner.login, { id: `cached-${fork.owner.login}`, login: fork.owner.login, isPersonal: false });
       }
     });
@@ -139,11 +146,11 @@ export const useForkTimelineActions = () => {
 
   const loadForksForOwner = useCallback(async (ownerLogin: string) => {
     if (!state.githubToken) {
-      toast(t('GitHub token 未找到，请重新登录。', 'GitHub token not found. Please login again.'), 'error');
+      toast(t('useForkTimelineActions.github-token-not-found-please-login-again'), 'error');
       return;
     }
     if (!ownerLogin) {
-      toast(t('Fork 仓库拥有者未找到，请重新登录。', 'Fork owner not found. Please login again.'), 'error');
+      toast(t('useForkTimelineActions.fork-owner-not-found-please-login-again'), 'error');
       return;
     }
     const requestSession = captureSession();
@@ -153,10 +160,27 @@ export const useForkTimelineActions = () => {
     state.setForkIsRefreshing(true);
     try {
       const api = new GitHubApiService(state.githubToken);
-      const fetchedForks = ownerLogin === personalOwnerLogin ? await api.getUserForks() : await api.getOrganizationForks(ownerLogin);
+      const isPersonalOwner = isSameGitHubLogin(ownerLogin, personalOwnerLogin);
+      const fetchedForks = isPersonalOwner ? await api.getUserForks() : await api.getOrganizationForks(ownerLogin);
       if (!isCurrentSession(requestSession)) return;
-      const newForks = fetchedForks.filter(fork => fork.fork === true && fork.owner.login === ownerLogin);
-      logger.info('githubApi', 'Refresh forks completed', { owner: ownerLogin, forkCount: newForks.length, durationMs: Date.now() - startTime });
+      let resolvedOwnerLogin = ownerLogin;
+      let refreshedUser: Awaited<ReturnType<GitHubApiService['getCurrentUser']>> | null = null;
+      if (isPersonalOwner) {
+        const matchingFork = fetchedForks.find(fork => fork.fork === true && isSameGitHubLogin(fork.owner.login, ownerLogin));
+        if (matchingFork) {
+          resolvedOwnerLogin = matchingFork.owner.login;
+        } else {
+          refreshedUser = await api.getCurrentUser();
+          if (!isCurrentSession(requestSession)) return;
+          if (refreshedUser.login) resolvedOwnerLogin = refreshedUser.login;
+        }
+        if (!isSameGitHubLogin(resolvedOwnerLogin, ownerLogin)) {
+          setSelectedForkOwner(resolvedOwnerLogin);
+        }
+      }
+      const newForks = fetchedForks.filter(fork => fork.fork === true && isSameGitHubLogin(fork.owner.login, resolvedOwnerLogin));
+      const replacedOwnerLogins = new Set([ownerLogin, resolvedOwnerLogin]);
+      logger.info('githubApi', 'Refresh forks completed', { owner: resolvedOwnerLogin, forkCount: newForks.length, durationMs: Date.now() - startTime });
       let updatedForks: ForkRepo[] = [];
       let newCount = 0;
       useAppStore.setState(current => {
@@ -175,9 +199,19 @@ export const useForkTimelineActions = () => {
           }
           return { ...newFork, has_unread: existing.has_unread, upstream_updated_at: existing.upstream_updated_at || currentTime };
         });
-        return { forks: [...current.forks.filter(fork => fork.owner.login !== ownerLogin || fork.fork !== true), ...updatedForks], readForks: nextReadForks };
+        return {
+          forks: [
+            ...current.forks.filter(fork => fork.fork !== true || !matchesOwnerLogins(fork.owner.login, replacedOwnerLogins)),
+            ...updatedForks,
+          ],
+          readForks: nextReadForks,
+        };
       });
-      setLoadedForkOwners(previous => new Set(previous).add(ownerLogin));
+      setLoadedForkOwners(previous => {
+        const next = new Set(previous);
+        replacedOwnerLogins.forEach(login => next.add(login));
+        return next;
+      });
       setLastRefreshTime(new Date().toISOString());
       await Promise.all(updatedForks.map(async fork => {
         if (!fork.fork) return;
@@ -201,12 +235,25 @@ export const useForkTimelineActions = () => {
         }
       }));
       if (!isCurrentSession(requestSession)) return;
-      toast(newCount > 0 ? t(`刷新完成！发现 ${newCount} 个新Fork。`, `Refresh completed! Found ${newCount} new forks.`) : t('刷新完成！', 'Refresh completed!'), newCount > 0 ? 'success' : 'info');
+      if (refreshedUser?.login) {
+        const storedUser = useAppStore.getState().user;
+        if (storedUser && storedUser.login !== refreshedUser.login) {
+          useAppStore.getState().setUser({
+            ...storedUser,
+            id: refreshedUser.id || storedUser.id,
+            login: refreshedUser.login,
+            name: refreshedUser.name ?? storedUser.name,
+            avatar_url: refreshedUser.avatar_url || storedUser.avatar_url,
+            email: refreshedUser.email ?? storedUser.email,
+          });
+        }
+      }
+      toast(newCount > 0 ? t('useForkTimelineActions.refresh-completed-found-newcount-new-forks', { newCount: newCount }) : t('useForkTimelineActions.refresh-completed'), newCount > 0 ? 'success' : 'info');
     } catch (error) {
       if (!isCurrentSession(requestSession)) return;
       console.error('Fork refresh failed:', error);
       logger.error('githubApi', 'Refresh forks failed', { owner: ownerLogin, error: error instanceof Error ? error.message : String(error), durationMs: Date.now() - startTime });
-      toast(t('Fork刷新失败，请检查网络连接。', 'Fork refresh failed. Please check your network connection.'), 'error');
+      toast(t('useForkTimelineActions.fork-refresh-failed-please-check-your-network-co'), 'error');
     } finally {
       if (refreshRequestRef.current?.id === refreshRequest.id) {
         refreshRequestRef.current = null;
@@ -217,7 +264,7 @@ export const useForkTimelineActions = () => {
 
   const handleForkOwnerChange = useCallback((ownerLogin: string) => {
     setSelectedForkOwner(ownerLogin);
-    const hasCachedOwnerForks = useAppStore.getState().forks.some(fork => fork.fork === true && fork.owner.login === ownerLogin);
+    const hasCachedOwnerForks = useAppStore.getState().forks.some(fork => fork.fork === true && isSameGitHubLogin(fork.owner.login, ownerLogin));
     if (!hasCachedOwnerForks && !loadedForkOwners.has(ownerLogin)) void loadForksForOwner(ownerLogin);
   }, [loadedForkOwners, loadForksForOwner]);
 
@@ -235,7 +282,7 @@ export const useForkTimelineActions = () => {
 
   const handleSyncUpstream = useCallback(async (fork: ForkRepo) => {
     if (!state.githubToken) {
-      toast(t('GitHub token 未找到，请重新登录。', 'GitHub token not found. Please login again.'), 'error');
+      toast(t('useForkTimelineActions.github-token-not-found-please-login-again'), 'error');
       return;
     }
     const request = {
@@ -262,7 +309,7 @@ export const useForkTimelineActions = () => {
       logger.error('githubApi', 'Failed to load fork branches for upstream sync', { repo: fork.full_name, error: error instanceof Error ? error.message : String(error) });
       setSyncModal(previous => ({ ...previous, isOpen: false, forkId: null }));
       setSyncModalBranches([]);
-      toast(t('加载分支失败，请检查网络连接后重试。', 'Failed to load branches. Please check your network connection and try again.'), 'error');
+      toast(t('useForkTimelineActions.failed-to-load-branches-please-check-your-networ'), 'error');
     } finally {
       if (branchRequestRef.current?.id === request.id) {
         branchRequestRef.current = null;
@@ -297,17 +344,17 @@ export const useForkTimelineActions = () => {
         };
       });
       setNeedsSyncMap(previous => ({ ...previous, [fork.id]: false }));
-      toast(result.mergeType === 'none' ? t(`${fork.name} 已是最新版本，无需更新。`, `${fork.name} is already up to date.`) : t(`已将 ${fork.name} 成功更新到上游最新版本。`, `${fork.name} has been successfully updated from upstream.`), result.mergeType === 'none' ? 'info' : 'success');
+      toast(result.mergeType === 'none' ? t('useForkTimelineActions.v1-is-already-up-to-date', { v1: fork.name }) : t('useForkTimelineActions.v1-has-been-successfully-updated-from-upstream', { v1: fork.name }), result.mergeType === 'none' ? 'info' : 'success');
     } catch (error) {
       if (!isCurrentSession(requestSession)) return;
       console.error('Sync failed:', error);
       const message = error instanceof Error ? error.message : String(error);
       logger.error('githubApi', 'Sync fork failed', { repo: fork.full_name, error: message, durationMs: Date.now() - syncStartTime });
       const userMessage = message === 'NOT_A_FORK'
-        ? t(`${fork.name} 不是 Fork 仓库，无法同步上游。`, `${fork.name} is not a fork. Cannot sync upstream.`)
+        ? t('useForkTimelineActions.v1-is-not-a-fork-cannot-sync-upstream', { v1: fork.name })
         : message === 'MERGE_CONFLICT'
-          ? t(`同步失败：${fork.name} 与上游仓库存在合并冲突，请手动解决后重试。`, `Sync failed: ${fork.name} has merge conflicts with upstream. Please resolve manually.`)
-          : t(`同步失败: ${message}`, `Sync failed: ${message}`);
+          ? t('useForkTimelineActions.sync-failed-v1-has-merge-conflicts-with-upstream', { v1: fork.name })
+          : t('useForkTimelineActions.sync-failed-message', { message: message });
       toast(userMessage, 'error');
     } finally {
       if (isCurrentSession(requestSession)) {
@@ -319,7 +366,7 @@ export const useForkTimelineActions = () => {
   const handleRunWorkflow = useCallback(async (forkId: number, workflowPath: string, workflowName: string) => {
     const current = useAppStore.getState();
     if (!current.githubToken) {
-      toast(t('GitHub token 未找到，请重新登录。', 'GitHub token not found. Please login again.'), 'error');
+      toast(t('useForkTimelineActions.github-token-not-found-please-login-again'), 'error');
       return;
     }
     const fork = current.forks.find(item => item.id === forkId);
@@ -331,12 +378,12 @@ export const useForkTimelineActions = () => {
       const [owner, repo] = fork.full_name.split('/');
       await new GitHubApiService(current.githubToken).triggerWorkflowRun(owner, repo, workflowPath, branch);
       logger.info('githubApi', 'Trigger workflow completed', { repo: fork.full_name, workflow: workflowName, branch, durationMs: Date.now() - startTime });
-      toast(t(`已触发工作流 "${workflowName}" 在 ${branch} 分支。`, `Triggered workflow "${workflowName}" on branch ${branch}.`), 'success');
+      toast(t('useForkTimelineActions.triggered-workflow-workflowname-on-branch-branch', { workflowName: workflowName, branch: branch }), 'success');
       await loadWorkflows(forkId);
     } catch (error) {
       console.error('Failed to run workflow:', error);
       logger.error('githubApi', 'Trigger workflow failed', { repo: fork.full_name, workflow: workflowName, error: error instanceof Error ? error.message : String(error), durationMs: Date.now() - startTime });
-      toast(t('运行工作流失败。', 'Failed to run workflow.'), 'error');
+      toast(t('useForkTimelineActions.failed-to-run-workflow'), 'error');
     } finally {
       setRunningWorkflows(previous => { const next = new Set(previous); next.delete(forkId); return next; });
     }
