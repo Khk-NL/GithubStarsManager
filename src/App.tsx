@@ -21,6 +21,7 @@ import { logger } from './services/logger';
 import { UpdateNotificationBanner } from './components/UpdateNotificationBanner';
 import { ClipboardLinkBanner } from './components/ClipboardLinkBanner';
 import { ListsPushIndicator } from './components/ListsPushIndicator';
+import { DeepLinkHandler } from './components/DeepLinkHandler';
 import { useBackendLifecycle } from './features/lifecycle/hooks/useBackendLifecycle';
 import type { AppState } from './types';
 import { hasActiveSearchFilters } from './utils/repoSearch';
@@ -283,6 +284,7 @@ function App() {
       <DebugModeIndicator />
       <SyncModeChoiceModal />
       <ListsPushIndicator />
+      <DeepLinkHandler />
     </div>
   );
 }
