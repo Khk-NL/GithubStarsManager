@@ -85,6 +85,7 @@ const currentPersistedKeys = [
   'categoryMatchMode',
   'defaultCategoryOverrides',
   'assetFilters',
+  'trendingSnapshots',
   'theme',
   'themePreset',
   'currentView',
@@ -203,7 +204,7 @@ describe('PR-07 Store modularization compatibility', () => {
       rpcDownloadConfig: { enabled: true, host: 'rpc.example.com', port: 6800, secret: 'rpc-secret' },
     });
 
-    expect(options.version).toBe(20);
+    expect(options.version).toBe(21);
     expect(Object.keys(persisted)).toEqual(currentPersistedKeys);
     expect(persisted.analyzingGistIds).toEqual(['gist-1']);
     expect(persisted.proxyConfig).toMatchObject({ password: 'proxy-password' });

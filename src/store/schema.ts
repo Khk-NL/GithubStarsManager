@@ -86,6 +86,7 @@ export type PersistedAppState = Partial<
     | 'categoryMatchMode'
     | 'assetFilters'
     | 'linkedApplications'
+    | 'trendingSnapshots'
     | 'theme'
     | 'themePreset'
     | 'currentView'

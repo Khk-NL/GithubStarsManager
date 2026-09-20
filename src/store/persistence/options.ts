@@ -19,12 +19,13 @@ import {
 import { normalizePersistedState } from '../normalizers/persistedState';
 import { DEFAULT_THEME_TOKENS, normalizeThemeTokens } from '../../utils/themeTokens';
 import { normalizeLinkedApplications } from '../../utils/linkedApplications';
+import { normalizeTrendingSnapshots } from '../../utils/trendingSnapshots';
 import { writeAuthMirror } from './authStorage';
 import { debouncedPersistStorage } from './storage';
 
 export const appPersistenceOptions: PersistOptions<AppStoreState, PersistedAppState> = {
   name: 'github-stars-manager',
-  version: 20,
+  version: 21,
   storage: debouncedPersistStorage as PersistStorage<PersistedAppState>,
 partialize: (state) => ({
   // 持久化用户信息和认证状态
@@ -98,6 +99,9 @@ sortOrder: state.gistSearchFilters.sortOrder,
 
   // 持久化资源过滤器
   assetFilters: state.assetFilters,
+
+  // Trending 快照（开发守则 §7）：本地榜单历史，不参与任何远端同步
+  trendingSnapshots: state.trendingSnapshots,
 
   // 持久化UI设置
   theme: state.theme,
@@ -347,6 +351,13 @@ state.discoverySortOrder = 'Descending';
     (state as Record<string, unknown>).telegramFollows = normalizeTelegramFollows(
       (state as Record<string, unknown>).telegramFollows,
     );
+  }
+
+  // v20→v21: 初始化 Trending 快照（开发守则 §7）。旧快照一律回落空数组；已经迁移过的
+  // 快照再跑一遍是 no-op（normalizeTrendingSnapshots 幂等，坏项被丢弃并裁剪超期记录）。
+  if (state) {
+    const stateRecord = state as Record<string, unknown>;
+    stateRecord.trendingSnapshots = normalizeTrendingSnapshots(stateRecord.trendingSnapshots);
   }
 
   // v5→v6: 初始化 proxyConfig

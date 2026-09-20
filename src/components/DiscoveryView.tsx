@@ -32,6 +32,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { recentlyViewedIds } from '../utils/recentlyViewed';
 import { useDiscoveryActions } from '../features/discovery/hooks/useDiscoveryActions';
 import { DiscoverySidebar } from './DiscoverySidebar';
+import { TrendingHistoryPanel } from '../features/discovery/components/TrendingHistoryPanel';
+import { useTrendingSnapshotCapture } from '../features/discovery/hooks/useTrendingSnapshotCapture';
 import { SubscriptionRepoCard } from './SubscriptionRepoCard';
 import { CodeSearchView } from './CodeSearchView';
 import { SortAlgorithmTooltip } from './SortAlgorithmTooltip';
@@ -537,6 +539,13 @@ export const DiscoveryView: React.FC = React.memo(() => {
     if (!hideSeen) return allRepos;
     return allRepos.filter((repo) => !seenIds.has(repo.id) || starredIds.has(repo.id));
   }, [allRepos, hideSeen, seenIds, starredIds]);
+  // Trending 快照（开发守则 §7）：只记 trending 频道，每天同一「周期 × 语言」保留一份
+  useTrendingSnapshotCapture(
+    allRepos,
+    selectedDiscoveryChannel === 'trending',
+    trendingTimeRange,
+    discoveryLanguage,
+  );
 
   // 从 store 获取当前频道的总数量
   const currentTotalCount = discoveryTotalCount?.[selectedDiscoveryChannel] ?? 0;
@@ -1273,6 +1282,10 @@ export const DiscoveryView: React.FC = React.memo(() => {
                   </>
                 )}
               </div>
+            )}
+
+            {selectedDiscoveryChannel === 'trending' && (
+              <TrendingHistoryPanel period={trendingTimeRange} language={discoveryLanguage} />
             )}
 
             {visibleRepos.length > 0 && (

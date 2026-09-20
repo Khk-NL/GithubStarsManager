@@ -11,6 +11,7 @@ import { DEFAULT_THEME_PRESET_ID, isThemePresetId } from '../../constants/themeP
 import { isAppLanguage } from '../../i18n/languages';
 import { normalizeReleaseSourceSettings } from '../../utils/releaseSources';
 import { normalizeLinkedApplications } from '../../utils/linkedApplications';
+import { normalizeTrendingSnapshots } from '../../utils/trendingSnapshots';
 import { normalizeXTweetAuth, normalizeXTweetFollows } from '../../utils/xTweetFollows';
 import { normalizeTelegramFollows } from '../../utils/telegramFollows';
 import type { AppStoreState } from '../types';
@@ -177,6 +178,8 @@ export const normalizePersistedState = (
     assetFilters: Array.isArray(safePersisted.assetFilters) && safePersisted.assetFilters.length > 0 ? safePersisted.assetFilters : defaultPresetFilters,
     // My Apps（开发守则 §3）：逐条规范化并丢弃非法项，脏快照不会把坏记录带进内存
     linkedApplications: normalizeLinkedApplications((safePersisted as Record<string, unknown>).linkedApplications),
+    // Trending 快照（开发守则 §7）：逐份校验并裁剪，坏快照不进内存
+    trendingSnapshots: normalizeTrendingSnapshots((safePersisted as Record<string, unknown>).trendingSnapshots),
     language: isAppLanguage(safePersisted.language) ? safePersisted.language : currentState.language,
     translationEngine: safePersisted.translationEngine === 'google' || safePersisted.translationEngine === 'ai'
       ? safePersisted.translationEngine
