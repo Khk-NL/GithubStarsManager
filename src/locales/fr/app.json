@@ -298,7 +298,14 @@
     "sort-files": "Par nombre de fichiers",
     "sort-stars": "Trier par étoile",
     "sort-starred": "Trier par heure d'ajout des étoiles",
-    "sync-lists-confirm-body": "Extraira vos listes GitHub (listes favorites) et les appliquera à votre référentiel local :\n\n· Chaque nom de liste sera ajouté à l'entrepôt correspondant sous forme d'étiquette (un entrepôt peut appartenir à plusieurs listes/catégories)\n· Les entrepôts avec des catégories déverrouillées appliqueront la catégorie correspondant à la liste et seront verrouillés par défaut\n· Les entrepôts avec des catégories verrouillées restent inchangés\n\nÊtes-vous sûr de vouloir continuer ?"
+    "sync-lists-confirm-body": "Extraira vos listes GitHub (listes favorites) et les appliquera à votre référentiel local :\n\n· Chaque nom de liste sera ajouté à l'entrepôt correspondant sous forme d'étiquette (un entrepôt peut appartenir à plusieurs listes/catégories)\n· Les entrepôts avec des catégories déverrouillées appliqueront la catégorie correspondant à la liste et seront verrouillés par défaut\n· Les entrepôts avec des catégories verrouillées restent inchangés\n\nÊtes-vous sûr de vouloir continuer ?",
+    "repository-health-facts": "Faits de santé du dépôt",
+    "show-only-archived-repositories": "Afficher uniquement les dépôts archivés",
+    "archived": "Archivé",
+    "show-only-repositories-pushed-within-the-last-12": "Afficher uniquement les dépôts poussés au cours des 12 derniers mois",
+    "pushed-in-12-months": "Poussé en 12 mois",
+    "show-only-repositories-without-a-declared-licens": "Afficher uniquement les dépôts sans licence déclarée",
+    "no-declared-license": "Aucune licence déclarée"
   },
   "searchDemo": {
     "search-feature-upgrade": "Mise à niveau de la fonction de recherche",
@@ -1174,5 +1181,21 @@
   "repositoryEditModal": {
     "char-count": "{{count}} mots",
     "tag-count": "{{count}} balises"
+  },
+  "installableAssetRecommendation": {
+    "confidence-high": "Confiance élevée",
+    "confidence-medium": "Confiance moyenne",
+    "confidence-low": "Confiance faible",
+    "installable-candidates": "Candidats installables",
+    "platform-not-detected": "Plateforme non détectée",
+    "detecting-architecture": "Détection de l'architecture…",
+    "assets-for-this-device": "Fichiers pour cet appareil",
+    "matches-this-device": "Compatible avec cet appareil",
+    "download-this-build": "Télécharger cette version",
+    "other-candidates-v1": "Autres candidats ({{v1}})",
+    "download": "Télécharger",
+    "detected-from-filenames-and-release-metadata-no": "Détecté à partir des noms de fichiers et des métadonnées de la Release. Aucun contrôle de sécurité n'est effectué et rien ne s'exécute automatiquement. Vous pouvez toujours choisir un autre fichier dans la liste ci-dessous.",
+    "excluded-v1-asset-s-that-do-not-apply-to-this-de": "{{v1}} fichier(s) écarté(s) car ils ne concernent pas cet appareil (code source, sommes de contrôle, signatures, symboles de débogage, blockmaps, autres plateformes ou architectures)."
   }
+
 }

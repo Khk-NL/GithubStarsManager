@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
 import { AlertTriangle, Archive, Ban, PackageOpen } from 'lucide-react';
 import type { Release, Repository } from '../types';
 import type {
@@ -9,7 +8,9 @@ import type {
   RepositoryHealthGroup,
   RepositoryHealthSignalId,
 } from '../types/health';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Badge } from './ui/badge';
+import { formatNumber, getDateFnsLocale } from '../i18n/format';
 import { useT, type TranslateFn } from '../i18n/useT';
 import type { AppLanguage } from '../i18n/languages';
 import {
@@ -87,8 +88,8 @@ const SIGNAL_ICONS: Record<RepositoryHealthSignalId, React.ComponentType<{ class
 };
 
 /** 千分位数字；非有限值原样回落，避免显示 NaN。 */
-function formatCount(value: number): string {
-  return Number.isFinite(value) ? value.toLocaleString('en-US') : '—';
+function formatCount(value: number, language: AppLanguage): string {
+  return Number.isFinite(value) ? formatNumber(value, language) : '—';
 }
 
 /** 绝对日期（YYYY-MM-DD），用于 tooltip 与相对时间的兜底。 */
@@ -122,15 +123,15 @@ function formatFactValue(
     case 'count':
       if (fact.value === null) return { text: '—', muted: true };
       if (fact.id === 'releasesPerYear') {
-        return { text: t('repositoryHealthPanel.v1-year', { v1: formatCount(fact.value as number) }), muted: false };
+        return { text: t('repositoryHealthPanel.v1-year', { v1: formatCount(fact.value as number, language) }), muted: false };
       }
-      return { text: formatCount(fact.value as number), muted: false };
+      return { text: formatCount(fact.value as number, language), muted: false };
     case 'duration': {
       if (fact.value === null) return { text: '—', muted: true };
       const days = fact.value as number;
       const years = Math.round((days / 365.25) * 10) / 10;
       return {
-        text: t('repositoryHealthPanel.v1-days-years-years', { v1: formatCount(days), years: years }),
+        text: t('repositoryHealthPanel.v1-days-years-years', { v1: formatCount(days, language), years: years }),
         muted: false,
       };
     }
@@ -142,7 +143,7 @@ function formatFactValue(
       return {
         text: formatDistanceToNow(timestamp, {
           addSuffix: true,
-          locale: language === 'zh' ? zhCN : undefined,
+          locale: getDateFnsLocale(language),
         }),
         title: formatAbsoluteDate(raw),
         muted: false,
@@ -170,53 +171,61 @@ export const RepositoryHealthPanel: React.FC<RepositoryHealthPanelProps> = ({
 
   const { snapshot, views } = groups;
 
+  const title = t('repositoryHealthPanel.repository-health-facts');
+
   return (
     <section
-      className="mb-3 rounded-md border border-border bg-muted/20 px-3 py-3"
-      aria-label={t('repositoryHealthPanel.repository-health-facts')}
+      className="mb-3 rounded-md border border-border bg-muted/20"
+      aria-label={title}
     >
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <h3 className="text-xs font-semibold">{t('repositoryHealthPanel.repository-health-facts')}</h3>
-        {snapshot.signals.map((signal) => {
-          const Icon = SIGNAL_ICONS[signal.id];
-          return (
-            <Badge key={signal.id} variant="outline" className="gap-1 text-[11px] font-normal">
-              <Icon className="h-3 w-3" aria-hidden="true" />
-              {t(SIGNAL_KEYS[signal.id])}
-            </Badge>
-          );
-        })}
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2">
-        {views.map(({ group, facts }) => (
-          <div key={group}>
-            <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-              {t(GROUP_KEYS[group])}
-            </p>
-            <dl className="space-y-0.5">
-              {facts.map((fact) => {
-                const formatted = formatFactValue(fact, t, language);
+      <Accordion type="single" collapsible>
+        <AccordionItem value="facts" className="border-0">
+          <AccordionTrigger className="px-3 py-2 text-xs hover:no-underline">
+            <span className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+              <span className="font-semibold">{title}</span>
+              {snapshot.signals.map((signal) => {
+                const Icon = SIGNAL_ICONS[signal.id];
                 return (
-                  <div key={fact.id} className="flex items-baseline justify-between gap-2 text-xs">
-                    <dt className="truncate text-muted-foreground">{t(FACT_KEYS[fact.id])}</dt>
-                    <dd
-                      className={`shrink-0 text-right ${formatted.muted ? 'text-muted-foreground' : ''}`}
-                      title={formatted.title}
-                    >
-                      {formatted.text}
-                    </dd>
-                  </div>
+                  <Badge key={signal.id} variant="outline" className="gap-1 text-[11px] font-normal">
+                    <Icon className="h-3 w-3" aria-hidden="true" />
+                    {t(SIGNAL_KEYS[signal.id])}
+                  </Badge>
                 );
               })}
-            </dl>
-          </div>
-        ))}
-      </div>
-
-      <p className="mt-2 text-[11px] text-muted-foreground">
-        {t('repositoryHealthPanel.these-are-objective-facts-with-no-overall-score')}
-      </p>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="px-3 pb-3">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {views.map(({ group, facts }) => (
+                <div key={group}>
+                  <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {t(GROUP_KEYS[group])}
+                  </p>
+                  <dl className="space-y-0.5">
+                    {facts.map((fact) => {
+                      const formatted = formatFactValue(fact, t, language);
+                      return (
+                        <div key={fact.id} className="flex items-baseline justify-between gap-2 text-xs">
+                          <dt className="truncate text-muted-foreground">{t(FACT_KEYS[fact.id])}</dt>
+                          <dd
+                            className={`shrink-0 text-right ${formatted.muted ? 'text-muted-foreground' : ''}`}
+                            title={formatted.title}
+                          >
+                            {formatted.text}
+                          </dd>
+                        </div>
+                      );
+                    })}
+                  </dl>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              {t('repositoryHealthPanel.these-are-objective-facts-with-no-overall-score')}
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </section>
   );
 };

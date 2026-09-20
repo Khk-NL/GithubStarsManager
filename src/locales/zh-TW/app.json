@@ -298,7 +298,14 @@
     "sort-name": "按名稱",
     "sort-stars": "按星標排序",
     "sort-starred": "按加星時間排序",
-    "sync-lists-confirm-body": "將拉取你的 GitHub Lists（星標清單）並套用到本地倉庫：\n\n· 每個 list 名會作為標籤新增至對應倉庫（一個倉庫可屬於多個 list/分類）\n· 未鎖定分類的倉庫將套用 list 對應的分類並預設鎖定\n· 已锁定分类的仓库保持不变\n\n確定繼續嗎？"
+    "sync-lists-confirm-body": "將拉取你的 GitHub Lists（星標清單）並套用到本地倉庫：\n\n· 每個 list 名會作為標籤新增至對應倉庫（一個倉庫可屬於多個 list/分類）\n· 未鎖定分類的倉庫將套用 list 對應的分類並預設鎖定\n· 已鎖定分類的倉庫保持不變\n\n確定繼續嗎？",
+    "repository-health-facts": "倉庫健康事實",
+    "show-only-archived-repositories": "只顯示已封存的倉庫",
+    "archived": "已封存",
+    "show-only-repositories-pushed-within-the-last-12": "只顯示近 12 個月內有推送的倉庫",
+    "pushed-in-12-months": "近 12 個月有推送",
+    "show-only-repositories-without-a-declared-licens": "只顯示未聲明授權的倉庫",
+    "no-declared-license": "未聲明授權"
   },
   "searchDemo": {
     "search-feature-upgrade": "搜尋功能升級",
@@ -1174,5 +1181,21 @@
   "repositoryEditModal": {
     "char-count": "{{count}} 字",
     "tag-count": "{{count}} 個標籤"
+  },
+  "installableAssetRecommendation": {
+    "confidence-high": "高信心",
+    "confidence-medium": "中等信心",
+    "confidence-low": "低信心",
+    "installable-candidates": "可安裝候選",
+    "platform-not-detected": "未辨識出平台",
+    "detecting-architecture": "正在辨識架構…",
+    "assets-for-this-device": "適用於目前裝置的資產",
+    "matches-this-device": "適用於目前裝置",
+    "download-this-build": "下載此版本",
+    "other-candidates-v1": "其他可選資產（{{v1}}）",
+    "download": "下載",
+    "detected-from-filenames-and-release-metadata-no": "依檔名與 Release 中繼資料辨識，未驗證安裝包安全性，也不會自動執行。你隨時可以在下方資產清單中手動選擇其他資產。",
+    "excluded-v1-asset-s-that-do-not-apply-to-this-de": "已排除 {{v1}} 個不適用於目前裝置的資產（原始碼、校驗和、簽章、偵錯符號、blockmap、其他平台/架構）。"
   }
+
 }
