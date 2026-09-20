@@ -6,6 +6,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const { createMcpLocalServer } = require('./mcpLocalServer');
 const { createPluginManager } = require('./plugins/pluginManager');
 const { downloadReleaseAsset } = require('./plugins/releaseDownload');
+const { findDeepLinkArg, normalizeDeepLink } = require('./deepLink');
 const { PAGE_SCHEME, pageCsp } = require('./plugins/pluginPage');
 const {
   DEFAULT_DESKTOP_PREFS,
@@ -961,15 +962,60 @@ ipcMain.handle('plugins:searchWeb', async (event, request) => {
   return getPluginManager().searchWeb(request);
 });
 
+// 深链（开发守则 §12）：注册协议、收集启动参数里的链接，第二次启动或系统唤起时
+// 转发给渲染进程。主进程只负责"这确实是我们协议的链接"，参数含义与动作全在渲染进程，
+// 也绝不根据链接执行安装/下载之类的动作。
+const DEEP_LINK_PROTOCOL_NAME = 'githubstarsmanager';
+let pendingDeepLink = findDeepLinkArg(process.argv);
+
+function registerDeepLinkProtocol() {
+  if (process.defaultApp && process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(DEEP_LINK_PROTOCOL_NAME, process.execPath, [path.resolve(process.argv[1])]);
+  } else {
+    app.setAsDefaultProtocolClient(DEEP_LINK_PROTOCOL_NAME);
+  }
+}
+
+function deliverDeepLink(value) {
+  const url = normalizeDeepLink(value);
+  if (!url) return;
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    // 窗口还没建好（例如冷启动），先存着等渲染进程来取
+    pendingDeepLink = url;
+    return;
+  }
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  mainWindow.webContents.send('deeplink:open', url);
+}
+
+ipcMain.handle('deeplink:consumePending', () => {
+  const value = pendingDeepLink;
+  pendingDeepLink = null;
+  return value;
+});
+
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  deliverDeepLink(url);
+});
+
 if (!gotSingleInstanceLock) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
+  app.on('second-instance', (_event, argv) => {
+    const url = findDeepLinkArg(argv);
+    if (url) {
+      deliverDeepLink(url);
+      return;
+    }
     restoreMainWindow();
   });
 }
 
 app.whenReady().then(() => {
+  registerDeepLinkProtocol();
   protocol.handle(PAGE_SCHEME, (request) => {
     const resource = getPluginManager().readPageResource(request.url);
     if (!resource) return new Response('Not Found', { status: 404 });
