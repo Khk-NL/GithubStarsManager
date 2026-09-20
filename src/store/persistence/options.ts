@@ -17,12 +17,13 @@ import {
   PersistedAppState,
 } from '../schema';
 import { normalizePersistedState } from '../normalizers/persistedState';
+import { normalizeLinkedApplications } from '../../utils/linkedApplications';
 import { writeAuthMirror } from './authStorage';
 import { debouncedPersistStorage } from './storage';
 
 export const appPersistenceOptions: PersistOptions<AppStoreState, PersistedAppState> = {
   name: 'github-stars-manager',
-  version: 16,
+  version: 17,
   storage: debouncedPersistStorage as PersistStorage<PersistedAppState>,
 partialize: (state) => ({
   // 持久化用户信息和认证状态
@@ -172,6 +173,8 @@ rpcDownloadConfig: {
   secret: state.rpcDownloadConfig.secret,
 },
 routeMode: state.routeMode,
+// My Apps（开发守则 §3）：手动关联记录，纯本地数据，不参与后端/自动同步
+linkedApplications: state.linkedApplications,
 }),
 migrate: (persistedState) => {
   // 版本升级适配处理
@@ -398,6 +401,13 @@ stateRecord.mcpConfig = normalizeMcpConfig(stateRecord.mcpConfig);
       || Array.isArray(stateRecord.accountWorkspaces)) {
       stateRecord.accountWorkspaces = {};
     }
+  }
+
+  // v16→v17: 初始化「My Apps」手动关联记录（开发守则 §3）。旧快照一律回落到空数组；
+  // 已经迁移过的快照再跑一遍是 no-op（normalizeLinkedApplications 幂等，非法项被丢弃）。
+  if (state) {
+    const stateRecord = state as Record<string, unknown>;
+    stateRecord.linkedApplications = normalizeLinkedApplications(stateRecord.linkedApplications);
   }
 
   return state as PersistedAppState;
