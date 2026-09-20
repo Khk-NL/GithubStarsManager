@@ -12,6 +12,7 @@ import { useRepositoryPlatforms } from '../hooks/useRepositoryPlatforms';
 import { GripVertical, Star, StarOff, ExternalLink, Calendar, Bell, BellOff, Bot, Sparkles, Terminal, Edit3, BookOpen, Square, CheckSquare, Loader2, HelpCircle, Search, Scale, MoreHorizontal, PackageOpen, MessageSquareText, Plug } from 'lucide-react';
 import { Repository, Category } from '../types';
 import { useAppStore } from '../store/useAppStore';
+import { isRepositoryCardFieldVisible } from '../utils/repositoryCardFields';
 import { useRepositoryDragStore } from '../store/useRepositoryDragStore';
 import { getAICategory, getDefaultCategory } from '../utils/categoryUtils';
 import { formatDistanceToNow } from 'date-fns';
@@ -499,6 +500,8 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
 }) => {
     const t = useT('repositories');
   const language = useAppStore((state) => state.language);
+  // 卡片可见字段（开发守则 §14）：未提供时按默认（显示）处理
+  const cardFields = useAppStore((state) => state.repositoryCardFields);
   const pluginActions = usePluginActions('repository-card');
   const {
     analyze: handleAIAnalyze,
@@ -1209,6 +1212,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
       ) : null}
 
       {/* Description with shared Tooltip */}
+      {isRepositoryCardFieldVisible(cardFields, 'description') && (
       <div className={viewMode === 'list' ? 'mb-3' : 'mb-4 flex-1'}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -1263,11 +1267,12 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
         </div>
         )}
       </div>
+      )}
 
       {/* List mode keeps tags and repository metadata on one wrapping information row. */}
       <div className={viewMode === 'list' ? 'flex flex-wrap items-center gap-x-3 gap-y-2' : 'contents'}>
       {/* Tags - 未AI分析时显示Topics，AI分析后显示AI标签 */}
-      {displayTags.tags.length > 0 && (
+      {isRepositoryCardFieldVisible(cardFields, 'tags') && displayTags.tags.length > 0 && (
         <div className={`flex flex-wrap ${viewMode === 'list' ? 'gap-1' : 'gap-2 mb-4'}`}>
           {displayTags.tags.map((tagItem, index) => (
             <span
@@ -1309,7 +1314,7 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
       <div className={viewMode === 'list' ? 'contents' : 'space-y-3 mt-auto'}>
         {/* Language and Stars */}
         <div className={`flex items-center ${viewMode === 'list' ? 'space-x-3 flex-wrap gap-y-1' : 'space-x-4'} text-xs text-muted-foreground dark:text-muted-foreground`}>
-          {repository.language && (
+          {isRepositoryCardFieldVisible(cardFields, 'language') && repository.language && (
             <div className="flex items-center space-x-1 min-w-0">
               <div
                 className="w-2.5 h-2.5 rounded-full flex-shrink-0"
@@ -1318,17 +1323,19 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
               <span className="truncate max-w-20">{repository.language}</span>
             </div>
           )}
+          {isRepositoryCardFieldVisible(cardFields, 'stars') && (
           <div className="flex items-center space-x-1 flex-shrink-0">
             <Star className="w-3.5 h-3.5" />
             <span className="truncate max-w-16">{formatNumber(repository.stargazers_count)}</span>
           </div>
+          )}
           {viewMode === 'list' && displayPlatforms.length > 0 && (
             <div className="flex items-center space-x-1 min-w-0">
               <Terminal className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="truncate max-w-40">{displayPlatforms.slice(0, 3).map(getPlatformDisplayName).join(' · ')}</span>
             </div>
           )}
-          {(() => {
+          {isRepositoryCardFieldVisible(cardFields, 'license') && (() => {
             // license：归一化后展示 SPDX id；无 license 不渲染
             const lic = normalizeLicense(repository.license);
             if (lic === NO_LICENSE_SENTINEL) return null;
@@ -1345,10 +1352,14 @@ const RepositoryCardComponent: React.FC<RepositoryCardProps> = ({
         <div className={viewMode === 'list' ? 'basis-full flex-none' : 'mt-4'}>
         <div className={`flex items-center justify-between text-muted-foreground dark:text-muted-foreground border-t ui-divider ${viewMode === 'list' ? 'w-full h-14 mt-4 text-sm leading-5' : 'pt-2 text-sm'}`}>
           <div className="relative flex min-w-0 items-center gap-1.5 leading-none">
+            {isRepositoryCardFieldVisible(cardFields, 'lastUpdated') && (
+            <>
             <Calendar className={`w-4 h-4 flex-shrink-0 transition-opacity duration-150 ${viewMode === 'grid' && vectorSearchAvailable && !selectionMode ? 'group-hover:opacity-0' : ''}`} />
             <span className={`truncate transition-opacity duration-150 ${viewMode === 'grid' && vectorSearchAvailable && !selectionMode ? 'group-hover:opacity-0' : ''}`}>
               {t('repositoryCard.last-pushed-time', { time: formatDistanceToNow(new Date(repository.pushed_at || repository.updated_at), { addSuffix: true, locale: getDateFnsLocale(language) }) })}
             </span>
+            </>
+            )}
 
             {viewMode === 'grid' && vectorSearchAvailable && !selectionMode && (
               <Button
