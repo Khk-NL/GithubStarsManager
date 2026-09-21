@@ -710,4 +710,12 @@
     </changelog>
     <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.8</downloadUrl>
   </version>
+  <version>
+    <number>0.9.9</number>
+    <releaseDate>2026-09-21</releaseDate>
+    <changelog>
+      <item>阶段 12b-1：插件注册表客户端（更新/撤销对照，只读不安装）</item>
+    </changelog>
+    <downloadUrl>https://github.com/Khk-NL/GithubStarsManager/releases/tag/v0.9.9</downloadUrl>
+  </version>
 </versions>
