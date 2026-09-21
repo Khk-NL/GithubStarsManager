@@ -143,3 +143,40 @@ modularization 测试）、`src/types/index.ts`、设置面板、`DiscoveryView.
 | `docs/logs/2026-09-21-stage-*.md` | 每阶段开发日志（阶段 0 / 5 / 9b / 9a / 10a / 10a-2 / 1a / 7a / 12b-1） |
 | `docs/logs/2026-09-21-session-summary.md` | **本文件**，交接入口 |
 | 工作区根目录 `PR-*.md` | 13 份 PR 正文；`回复维护者.md` 是给维护者的沟通稿 |
+
+## 七、用户已决定的事项（2026-09-22）
+
+### 7.1 §12b 安装的解包方案：**先问维护者再定**
+
+下一个会话不要直接开写安装。先在 `pr/community-plugin-registry`（契约）与 `pr/plugin-registry-client`
+（只读客户端）的 PR 里问清楚：允许手写最小 unzip，还是允许引入一个只做解压的运行时依赖（如
+`yauzl`，需考虑 electron-builder 打包与体积）。得到答复后再动手；在答复之前，安装那一半保持不做。
+
+### 7.2 PR：**先开最独立的 2-3 个**
+
+按无依赖、体积小、易评审排序，先开这三个：
+
+| 顺序 | 分支 | 标题 | 一键创建 |
+|---|---|---|---|
+| 1 | `pr/installable-asset-detection` | `feat: detect installable release assets` | https://github.com/AmintaCCCP/GithubStarsManager/compare/main...Khk-NL:GithubStarsManager:pr/installable-asset-detection?expand=1 |
+| 2 | `pr/batch-repository-url-extraction` | `feat: add batch repository URL extraction` | https://github.com/AmintaCCCP/GithubStarsManager/compare/main...Khk-NL:GithubStarsManager:pr/batch-repository-url-extraction?expand=1 |
+| 3 | `pr/recently-viewed` | `feat: add recently viewed repositories` | https://github.com/AmintaCCCP/GithubStarsManager/compare/main...Khk-NL:GithubStarsManager:pr/recently-viewed?expand=1 |
+
+正文直接复制对应 `PR-<slug>.md` 里的内容（标题、正文、验证清单都在里面）。
+
+注意：**本机没有安装 `gh`**，所以只能点上面的链接在浏览器里创建。既有的约定是"只推分支 + 生成
+md，不自动创建 PR"——如果希望改成由 agent 直接调 API 创建，需要用户显式解除那条约定（并确认
+token 与权限）。
+
+其余分支等这三个合并、上游 main 前进之后再开，避免反复 rebase。
+
+### 7.3 版本策略：**继续每阶段 bump，只在要发版时打 tag**
+
+保持现状：阶段完成时在 fork main 上 `npm run update-version` + `npm run sync-version` 并提交；
+只有真要发版时才打 tag。
+
+已知且**无需修复**的一点：`versions/version-info.xml` 里 0.9.6–0.9.9 的下载链接指向还不存在的
+release（最后打过的 tag 是 `v0.9.5`）。这不影响用户——`src/constants/project.ts` 的
+`PROJECT_REPO_URL` 指向**上游**，应用内更新检查读的是上游的 feed，fork 自己的条目不会被使用。
+如果要让 fork 用户也能从应用内更新，才需要给这些版本补 tag 并触发构建。
+
