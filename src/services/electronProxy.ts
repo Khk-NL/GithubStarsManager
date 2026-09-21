@@ -78,7 +78,10 @@ interface ElectronAPI {
   };
   desktop?: DesktopElectronAPI;
   mcp?: McpElectronAPI;
-  plugins?: ElectronPluginAPI;
+  /** 插件宿主 API；`registry` 是社区注册表的只读通道（开发守则 §17）。 */
+  plugins?: ElectronPluginAPI & {
+    registry?: { load: () => Promise<import('./pluginRegistryService').PluginRegistryLoadResult> };
+  };
   /** Deep Link（开发守则 §12）：主进程转发的 githubstarsmanager:// 链接 */
   deepLink?: {
     consumePending: () => Promise<string | null>;

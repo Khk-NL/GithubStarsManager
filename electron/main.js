@@ -7,6 +7,7 @@ const { createMcpLocalServer } = require('./mcpLocalServer');
 const { createPluginManager } = require('./plugins/pluginManager');
 const { downloadReleaseAsset } = require('./plugins/releaseDownload');
 const { findDeepLinkArg, normalizeDeepLink } = require('./deepLink');
+const { loadPluginRegistry } = require('./plugins/pluginRegistryFeed');
 const { PAGE_SCHEME, pageCsp } = require('./plugins/pluginPage');
 const {
   DEFAULT_DESKTOP_PREFS,
@@ -934,6 +935,11 @@ ipcMain.handle('plugins:downloadReleaseAsset', async (_event, request) => {
     ...resolved.value,
   });
 });
+// 社区插件注册表（开发守则 §17）：主进程取回并逐条校验，渲染进程只拿到校验过的结构。
+// 这里不下载任何插件包，也不做任何安装动作。
+ipcMain.handle('plugins:loadRegistry', async () => loadPluginRegistry({
+  fetchImpl: (url, options) => net.fetch(url, options),
+}));
 ipcMain.handle('plugins:runExporter', async (_event, request) =>
   getPluginManager().runExporter(request)
 );

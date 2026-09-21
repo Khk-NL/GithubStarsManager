@@ -1083,7 +1083,17 @@
     "cancel": "取消",
     "uninstall-keep-data": "保留資料並卸載",
     "uninstall-and-delete-data": "卸載並刪除數據",
-    "open-page-named": "開啟頁面：{{name}}"
+    "open-page-named": "開啟頁面：{{name}}",
+    "community-registry": "社群外掛登錄庫",
+    "community-registry-hint": "僅供對照：顯示已安裝外掛的更新與撤銷狀態，不會自動下載或安裝任何東西。",
+    "update-available-v1": "版本 {{v1}} 已推出",
+    "up-to-date": "已更新至最新",
+    "revoked": "已遭撤銷",
+    "blocked": "已遭封鎖",
+    "not-in-registry": "不在登錄庫中",
+    "new-permissions-v1": "新增權限：{{v1}}",
+    "disable-now": "立刻停用",
+    "v1-entries-failed-validation": "登錄庫裡有 {{v1}} 筆記錄未通過驗證，已忽略。"
   },
   "starSyncPanel": {
     "star-sync": "星標同步",
@@ -1120,7 +1130,7 @@
     "reset-appearance": "恢復預設外觀",
     "card-fields": "倉庫卡片顯示欄位",
     "card-fields-hint": "只影響倉庫清單中每張卡片顯示什麼，不會改動資料本身。",
-    "card-field-description": "描述",
+    "card-field-description": "說明",
     "card-field-tags": "標籤",
     "card-field-language": "主要語言",
     "card-field-stars": "Star 數",
