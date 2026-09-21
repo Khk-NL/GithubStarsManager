@@ -8,7 +8,7 @@
 | 项 | 值 |
 |---|---|
 | fork main | `2b241ba`，版本 **0.9.9**（fork 自己的发布线，与上游版本无关） |
-| 上游基线 | `AmintaCCCP/GithubStarsManager` main = **`a8d4b7c`** |
+| 上游基线 | `AmintaCCCP/GithubStarsManager` main = **`f60d766`**（2026-09-22 更新，见第八节；13 个分支仍切自旧的 `a8d4b7c`） |
 | 待开 PR 的分支 | **13 个**（下表），全部基于 `a8d4b7c`、每个 1 个提交、已推送 |
 | PR 正文 | 工作区根目录 `PR-<slug>.md`（13 份），含标题、一键创建链接、验证清单 |
 | 全量测试 | vitest **1346 通过**；`RepositoryCard.lazyReadme` 在并行满载下会超时（既有 flake，单独跑 2/2 通过，不要改被测代码） |
@@ -179,4 +179,38 @@ token 与权限）。
 release（最后打过的 tag 是 `v0.9.5`）。这不影响用户——`src/constants/project.ts` 的
 `PROJECT_REPO_URL` 指向**上游**，应用内更新检查读的是上游的 feed，fork 自己的条目不会被使用。
 如果要让 fork 用户也能从应用内更新，才需要给这些版本补 tag 并触发构建。
+
+## 八、上游基线更新（2026-09-22，重要）
+
+用户提示"原仓库最近又有修改"，已核对：上游 main 从 `a8d4b7c` 前进到 **`f60d766`**（+8 提交）：
+
+| 提交 | 内容 | 是否影响我们 |
+|---|---|---|
+| `a9b8d81` / `6902db4` | `fix(i18n): 向量搜索模型来源选项与 API Key 标签不再露出 raw key`（#384）：新增 `src/constants/embeddingApiTypes.ts`、`src/i18n/vectorSearchApiTypeLabels.test.ts`，改 `VectorSearchSettings.tsx`，并给**全部 10 个 `src/locales/*/app.json` 各加 7 行** | 只影响 `app.json` 的 `vectorSearchSettings` 段；与我们的 key 不重叠 |
+| `e500dbc` / `dbf23a7` / `1fe00c5` | `ci: 固定 ubuntu-latest 到 ubuntu-24.04`（#385）+ 注释统一 | 不涉及前端 |
+| `265fc8a` / `f60d766` | 上游版本 0.8.1 → 0.8.2 + release info | 与 fork 版本线无关 |
+| `a62904d` | CI 修复：fullstack arm64 构建依赖、electron-builder 重试、升级 action-gh-release 到 v3 | 不涉及前端 |
+
+**结论：这 8 个提交没有一项碰到我们正在做的功能，没有重复劳动；12 个待开 PR 的分支对新上游用
+`git merge-tree` 逐个探测都是零冲突**（命令：`git merge-tree --write-tree --name-only refs/remotes/aminta/main <branch>`）。
+
+不过仍建议**在开每个 PR 之前先把该分支 rebase 到最新上游**：
+
+```bash
+git fetch https://github.com/AmintaCCCP/GithubStarsManager.git main:refs/remotes/aminta/main
+git checkout pr/<slug>
+git rebase refs/remotes/aminta/main     # 每个分支只有 1 个提交，冲突面就是那 10 个 app.json
+npm run check:boundaries && node scripts/check-i18n.cjs --base refs/remotes/aminta/main \
+  && npm run lint && npm run typecheck && npm run build
+# 推送（分支已被别人看过时用 --force-with-lease）
+git push --force-with-lease=refs/heads/pr/<slug>:<旧 sha> origin pr/<slug>
+```
+
+rebase 后必须重跑 i18n 门禁（上游新增了 7 个 key/语言，parity 要求是"key 集合一致"，我们的提交
+是纯增量，理应仍然干净，但要实测确认），并且**不要**把上游的版本文件改动带进 PR 分支。
+
+另外一件可选事项：把上游这 8 个提交并进 fork main（可拿到 CI 修复与 vector i18n 修复）。预期
+`app.json` 与版本文件会冲突，解法照 5.3 的套路——但 fork main 已经叠了 9 个阶段，这个合并值得
+单独一轮做，别和其他改动混在一起。
+
 
