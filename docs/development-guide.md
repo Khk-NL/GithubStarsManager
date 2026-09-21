@@ -218,13 +218,19 @@ PR diff 检查：
 3. 跑 `npm run check:i18n -- --base <PR 基线>`，必须干净。
    **注意：`check-i18n.cjs` 读的是 git 里 HEAD 的内容，不是工作区**（`showFile(root, head, ...)`）。所以未提交时跑门禁会给出虚假的通过——必须**先提交再跑**，或者至少在同一批里把改动提交后重跑一次。同样地，zh-TW 里与简体同形的字（`小` `中` `大` 这类）会被判成"照抄简体"，要用台湾的用词区分开（`小號` `中號` `大號`）。
 4. 用行锚点插入改 locale 文件，**不要 `JSON.parse` 之后 `JSON.stringify` 整文件回写**：locale 文件是 CRLF，整体重写会产生上千行 diff，而且容易改坏编码。
-5. 如果动了 AI prompt 相关的文案，`src/services/aiPromptFixtures.test.ts` 可能要重新生成：`UPDATE_I18N_FIXTURES=1 npx vitest run src/services/aiPromptFixtures.test.ts`，然后**确认 diff 只有你这次加的那块**。
+5. **多阶段并行时，冲突的 locale 文件不要手工解**：`git checkout --ours -- src/locales` 之后重跑那个阶段的插入脚本。但要注意：**插入脚本里的译文必须与分支上已经修正过的版本保持一致**——有一轮就是因为脚本里还是修正前的 `描述`，把上一阶段刚过门禁的 zh-TW 措辞悄悄退回去了，合并后重跑门禁才发现。
+6. 如果动了 AI prompt 相关的文案，`src/services/aiPromptFixtures.test.ts` 可能要重新生成：`UPDATE_I18N_FIXTURES=1 npx vitest run src/services/aiPromptFixtures.test.ts`，然后**确认 diff 只有你这次加的那块**。
 
 ### 5.4 i18n 上踩过的坑
 
 - 只补 zh/en 就推送，会在 10 语言 parity 门禁上挂掉（资产识别分支就是这样欠了 8 种语言）。
 - 从 `git diff` 的 `+` 行判断某个 key 是谁的，会被"移动的行也显示为新增"骗到，删掉上游的 key。要确认归属用 `git grep <key> <上游 sha> -- src/locales/en/<ns>.json`。
 - 按行删除 key/section 会留下尾逗号，让 JSON 全体解析失败，vitest 连收集都过不去。改完随手 `JSON.parse` 验一遍。
+- **zh-TW 与简体同形的词会被判"照抄简体"**（规则见 5.2 第 4 条）。已经中过招的词与可用替代：
+  `小/中/大` → `小號/中號/大號`；`上升/下降` → `爬升/下滑`；`描述` → `說明`；`有新版本` →
+  `版本 {{v1}} 已推出`；`已是最新` → `已更新至最新`；`立即停用` → `立刻停用`。列表本身还有旧词
+  （如 `dark`）同形，但门禁只查本次改动过的 key，不必回头改。
+- 交付前对**每个分支的提交后状态**各跑一次门禁（`git checkout <branch>` + `node scripts/check-i18n.cjs --base refs/remotes/aminta/main`），比只信分支开发时的结果可靠。
 
 ---
 
